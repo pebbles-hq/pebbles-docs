@@ -1,0 +1,33 @@
+# The Pebbles gallery / showcase — a standalone app that depends on the published
+# `pebbles` framework by git. This is the app the landing site embeds under its
+# "learn / docs" section (every widget, live). The framework itself lives in
+# https://github.com/pebbles-hq/pebbles; the simple starter examples (counter,
+# todo, …) live there under `examples/`.
+[workspace]
+
+[package]
+name = "gallery"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.90"
+publish = false
+description = "The Pebbles widget gallery / showcase — the app behind the pebbles-landing docs."
+license = "Apache-2.0"
+
+[dependencies]
+pebbles = { git = "https://github.com/pebbles-hq/pebbles", features = ["image-view", "file-dialogs"] }
+
+# Headless demo capture (GALLERY_CAPTURE=<dir>): vello WITH default features for the
+# GPU `Renderer` + `util::RenderContext`, wgpu for the texture readback. These must
+# resolve to the same versions the framework uses.
+vello = { version = "0.10", default-features = true }
+wgpu = "29"
+pollster = "1"
+
+# The GPU/shader crates are painfully slow unoptimized; opt them (and only them) at
+# -O2 while keeping our own code at -O0 for fast incremental builds (mirrors pebbles).
+[profile.dev]
+opt-level = 0
+
+[profile.dev.package."*"]
+opt-level = 2
