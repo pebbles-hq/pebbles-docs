@@ -17,10 +17,13 @@ license = "Apache-2.0"
 [dependencies]
 pebbles = { git = "https://github.com/pebbles-hq/pebbles", features = ["image-view", "file-dialogs"] }
 
-# Headless demo capture (GALLERY_CAPTURE=<dir>): vello WITH default features for the
-# GPU `Renderer` + `util::RenderContext`, wgpu for the texture readback. These must
-# resolve to the same versions the framework uses.
+# Headless demo capture (GALLERY_CAPTURE=<dir>). The framework now defaults to the
+# `vello-hybrid` backend, so `pebbles::render::Scene` is the hybrid op-list — the
+# capture rasterizes it through `vello_hybrid` (mirroring the shell's GPU host).
+# `vello::util::RenderContext` is kept only to acquire a headless wgpu device; `wgpu`
+# reads the texture back. All must resolve to the same versions the framework uses.
 vello = { version = "0.10", default-features = true }
+vello_hybrid = "0.2"
 wgpu = "29"
 pollster = "1"
 

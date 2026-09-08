@@ -10,6 +10,33 @@ use pebbles::prelude::*;
 
 pub use pebbles::prelude::{gap_h, gap_w};
 
+/// Brand accent colors for the marketing surfaces (landing page + component index).
+/// Kept independent of the shadcn theme so the hero gradient and accents stay vivid
+/// in both light and dark mode.
+pub mod brand {
+    use pebbles::prelude::Color;
+
+    /// Indigo — the primary brand hue.
+    pub const INDIGO: Color = Color::from_rgba8(0x63, 0x66, 0xF1, 0xFF);
+    /// Violet — the gradient midpoint.
+    pub const VIOLET: Color = Color::from_rgba8(0x8B, 0x5C, 0xF6, 0xFF);
+    /// Cyan — the gradient end / highlight.
+    pub const CYAN: Color = Color::from_rgba8(0x22, 0xD3, 0xEE, 0xFF);
+    /// Pink — a secondary accent.
+    pub const PINK: Color = Color::from_rgba8(0xEC, 0x48, 0x99, 0xFF);
+    /// Deep ink used behind the hero in light mode.
+    pub const INK: Color = Color::from_rgba8(0x0B, 0x0F, 0x1E, 0xFF);
+}
+
+/// The signature diagonal brand gradient (indigo → violet → cyan).
+pub fn brand_gradient() -> Gradient {
+    Gradient::linear(
+        Alignment::TOP_LEFT,
+        Alignment::BOTTOM_RIGHT,
+        [brand::INDIGO, brand::VIOLET, brand::CYAN],
+    )
+}
+
 /// A scrollable, padded screen with a heading + subtitle.
 #[derive(Clone, Default)]
 pub struct Screen {
@@ -19,7 +46,10 @@ pub struct Screen {
 
 /// Create a [`Screen`] with a heading.
 pub fn screen(title: &str) -> Screen {
-    Screen { title: title.to_string(), ..Default::default() }
+    Screen {
+        title: title.to_string(),
+        ..Default::default()
+    }
 }
 
 impl Screen {
@@ -30,16 +60,22 @@ impl Screen {
     }
     /// The screen body (sections / docs). Builds and returns the `Element`.
     pub fn body(self, body: impl IntoChildren) -> Element {
-        let mut items: Vec<AnyWidget> =
-            vec![heading(self.title.clone()).into_widget(), gap_h(4.0).into_widget()];
+        let mut items: Vec<AnyWidget> = vec![
+            heading(self.title.clone()).into_widget(),
+            gap_h(4.0).into_widget(),
+        ];
         if let Some(sub) = &self.description {
             items.push(subtitle(sub.clone()).into_widget());
         }
         items.push(gap_h(24.0).into_widget());
         items.extend(body.into_children());
-        scroll_view(container().padding(EdgeInsets::all(30.0)).child(
-            column(items).cross_axis_alignment(CrossAxisAlignment::Stretch).main_axis_size(MainAxisSize::Min),
-        ))
+        scroll_view(
+            container().padding(EdgeInsets::all(30.0)).child(
+                column(items)
+                    .cross_axis_alignment(CrossAxisAlignment::Stretch)
+                    .main_axis_size(MainAxisSize::Min),
+            ),
+        )
         .into_widget()
     }
 }
@@ -47,7 +83,10 @@ impl Screen {
 /// A labeled sub-section within a screen.
 pub fn section(title: &str, body: impl IntoWidget) -> Element {
     column(children![
-        text(title.to_string()).size(12.0).semibold().color(theme().colors.muted_foreground),
+        text(title.to_string())
+            .size(12.0)
+            .semibold()
+            .color(theme().colors.muted_foreground),
         gap_h(12.0),
         body,
         gap_h(28.0),
@@ -67,7 +106,10 @@ pub struct Doc {
 
 /// Create a [`Doc`] with a section title.
 pub fn doc(title: &str) -> Doc {
-    Doc { title: title.to_string(), ..Default::default() }
+    Doc {
+        title: title.to_string(),
+        ..Default::default()
+    }
 }
 
 impl Doc {
@@ -80,12 +122,20 @@ impl Doc {
     pub fn body(self, body: impl IntoWidget) -> Element {
         let c = theme().colors;
         let mut items: Vec<AnyWidget> = vec![
-            text(self.title).size(16.0).semibold().color(c.foreground).into_widget(),
+            text(self.title)
+                .size(16.0)
+                .semibold()
+                .color(c.foreground)
+                .into_widget(),
             gap_h(4.0).into_widget(),
         ];
         if let Some(desc) = &self.description {
             items.push(
-                text(desc.clone()).size(13.5).line_height(1.45).color(c.muted_foreground).into_widget(),
+                text(desc.clone())
+                    .size(13.5)
+                    .line_height(1.45)
+                    .color(c.muted_foreground)
+                    .into_widget(),
             );
         }
         items.push(gap_h(16.0).into_widget());
@@ -112,7 +162,15 @@ pub struct StatCardProps {
 /// A reusable stat tile — the canonical props case: a parameterized widget reused
 /// with different inputs.
 pub fn stat_card(title: &str, value: &str, icon: IconKind, tint: Color) -> impl IntoWidget {
-    component_props(render_stat_card, StatCardProps { title: title.into(), value: value.into(), icon, tint })
+    component_props(
+        render_stat_card,
+        StatCardProps {
+            title: title.into(),
+            value: value.into(),
+            icon,
+            tint,
+        },
+    )
 }
 
 fn render_stat_card(p: &StatCardProps) -> Card {
@@ -121,7 +179,11 @@ fn render_stat_card(p: &StatCardProps) -> Card {
         column(children![
             row(children![
                 container()
-                    .decoration(BoxDecoration::new().color(p.tint).radius(BorderRadius::all(8.0)))
+                    .decoration(
+                        BoxDecoration::new()
+                            .color(p.tint)
+                            .radius(BorderRadius::all(8.0))
+                    )
                     .padding(EdgeInsets::all(8.0))
                     .child(icon(p.icon).size(18.0).color(palette::WHITE)),
                 gap_w(10.0),

@@ -3,8 +3,9 @@
 //! `GALLERY_CAPTURE=<dir> cargo run -p gallery --release` renders the REAL
 //! "Windows & IPC" screen and its secondary counter window off-screen — no
 //! display server, no screenshot tool, no consent dialog — driving the actual
-//! shared signal + typed channel and rasterizing each window through vello to a
-//! GPU texture it reads back to raw RGBA. `demo/build_demo.py` then composites
+//! shared signal + typed channel and rasterizing each window through vello_hybrid
+//! (the default backend) to a GPU texture it reads back to raw RGBA.
+//! `demo/build_demo.py` then composites
 //! the two windows per step into the screenshot strip and the animated GIF.
 //!
 //! Why headless rather than a screen grab: it captures the exact rendered
@@ -17,9 +18,13 @@ use std::path::Path;
 
 use pebbles::core::Ui;
 use pebbles::prelude::*;
+use pebbles::render::paint::kurbo;
 use pebbles::render::{Scene, TextEnv};
 use vello::util::RenderContext;
-use vello::{AaConfig, AaSupport, RenderParams, Renderer, RendererOptions};
+use vello_hybrid::{
+    RenderSize, RenderTargetConfig, Renderer as HybRenderer, Resources, Scene as HybScene,
+    TextureBindings,
+};
 use wgpu::{
     Extent3d, TexelCopyBufferInfo, TexelCopyBufferLayout, TexelCopyTextureInfo, TextureDescriptor,
     TextureDimension, TextureFormat, TextureUsages,
@@ -41,32 +46,39 @@ struct Beat {
     act: fn(),
 }
 
-/// The GPU side: a headless vello renderer plus a reused readback scratch buffer.
+/// The GPU side: a headless `vello_hybrid` renderer + its glyph/image `Resources`
+/// (built once, reused at every size — the same contract as the shell's GPU host).
 struct Gpu {
     device: wgpu::Device,
     queue: wgpu::Queue,
-    renderer: Renderer,
+    renderer: HybRenderer,
+    resources: Resources,
 }
 
 impl Gpu {
     fn new() -> Self {
-        // vello's own RenderContext requests an adapter + device with exactly the
-        // features/limits vello needs — the same path the shell uses, minus a
-        // surface (headless).
+        // vello's `RenderContext` is the easiest way to acquire a headless wgpu
+        // device/queue (adapter + device, no surface). The rasterizer itself is
+        // vello_hybrid — matching the app's default backend.
         let mut ctx = RenderContext::new();
         let dev_id = pollster::block_on(ctx.device(None)).expect("no compatible GPU device");
         let handle = ctx.devices.remove(dev_id);
-        let renderer = Renderer::new(
+        // Build the renderer + its Resources ONCE; `render()` grows to each frame's
+        // size, so the largest capture size here is just the initial hint.
+        let (renderer, resources) = HybRenderer::new(
             &handle.device,
-            RendererOptions {
-                use_cpu: false,
-                antialiasing_support: AaSupport::area_only(),
-                num_init_threads: None,
-                pipeline_cache: None,
+            &RenderTargetConfig {
+                format: TextureFormat::Rgba8Unorm,
+                width: MAIN_W,
+                height: MAIN_H,
             },
-        )
-        .expect("vello renderer");
-        Gpu { device: handle.device, queue: handle.queue, renderer }
+        );
+        Gpu {
+            device: handle.device,
+            queue: handle.queue,
+            renderer,
+            resources,
+        }
     }
 
     /// Rasterize `scene` at `w×h` on a white base and read the pixels back as
@@ -74,29 +86,54 @@ impl Gpu {
     fn rasterize(&mut self, scene: &Scene, w: u32, h: u32) -> Vec<u8> {
         let texture = self.device.create_texture(&TextureDescriptor {
             label: Some("capture-target"),
-            size: Extent3d { width: w, height: h, depth_or_array_layers: 1 },
+            size: Extent3d {
+                width: w,
+                height: h,
+                depth_or_array_layers: 1,
+            },
             mip_level_count: 1,
             sample_count: 1,
             dimension: TextureDimension::D2,
+            // vello_hybrid rasterizes into a render attachment (not a storage image).
             format: TextureFormat::Rgba8Unorm,
-            usage: TextureUsages::STORAGE_BINDING | TextureUsages::COPY_SRC,
+            usage: TextureUsages::RENDER_ATTACHMENT | TextureUsages::COPY_SRC,
             view_formats: &[],
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+
+        // Build the backend scene: clear to white, then flush the recorded op-list into
+        // a live vello_hybrid::Scene (resolving glyphs against `resources`).
+        let mut hyb = HybScene::new(
+            w.min(u32::from(u16::MAX)) as u16,
+            h.min(u32::from(u16::MAX)) as u16,
+        );
+        hyb.set_paint(Color::from_rgba8(255, 255, 255, 255));
+        hyb.fill_rect(&kurbo::Rect::new(0.0, 0.0, f64::from(w), f64::from(h)));
+        scene.flush(&mut hyb, &mut self.resources);
+        // The IPC demo windows draw no images, so no external textures to bind.
+        let bindings = TextureBindings::new();
+
+        let mut render_enc = self
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("capture-render"),
+            });
         self.renderer
-            .render_to_texture(
+            .render(
+                &hyb,
+                &mut self.resources,
                 &self.device,
                 &self.queue,
-                scene,
-                &view,
-                &RenderParams {
-                    base_color: vello::peniko::Color::from_rgba8(255, 255, 255, 255),
+                &mut render_enc,
+                &RenderSize {
                     width: w,
                     height: h,
-                    antialiasing_method: AaConfig::Area,
                 },
+                &view,
+                &bindings,
             )
-            .expect("render_to_texture");
+            .expect("vello_hybrid render");
+        self.queue.submit([render_enc.finish()]);
 
         // Copy the texture into a buffer, honoring wgpu's 256-byte row alignment.
         let unpadded = w * 4;
@@ -107,7 +144,9 @@ impl Gpu {
             usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
             mapped_at_creation: false,
         });
-        let mut enc = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None });
+        let mut enc = self
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None });
         enc.copy_texture_to_buffer(
             TexelCopyTextureInfo {
                 texture: &texture,
@@ -123,7 +162,11 @@ impl Gpu {
                     rows_per_image: Some(h),
                 },
             },
-            Extent3d { width: w, height: h, depth_or_array_layers: 1 },
+            Extent3d {
+                width: w,
+                height: h,
+                depth_or_array_layers: 1,
+            },
         );
         self.queue.submit([enc.finish()]);
 
@@ -132,7 +175,9 @@ impl Gpu {
         slice.map_async(wgpu::MapMode::Read, move |r| {
             let _ = tx.send(r);
         });
-        self.device.poll(wgpu::PollType::wait_indefinitely()).expect("poll");
+        self.device
+            .poll(wgpu::PollType::wait_indefinitely())
+            .expect("poll");
         rx.recv().expect("map channel").expect("buffer mapped");
 
         let mapped = slice.get_mapped_range();
@@ -192,16 +237,30 @@ pub fn run(out_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
     let bg = theme().colors.background;
     let mut main = Ui::new();
     main.make_current();
-    main.mount_root(View::new(bg, OverlayHost::wrap(component(windows).into_widget())).into_widget());
+    main.mount_root(
+        View::new(bg, OverlayHost::wrap(component(windows).into_widget())).into_widget(),
+    );
     let mut side = Ui::new();
     side.make_current();
-    side.mount_root(View::new(bg, OverlayHost::wrap(component(counter_window).into_widget())).into_widget());
+    side.mount_root(
+        View::new(
+            bg,
+            OverlayHost::wrap(component(counter_window).into_widget()),
+        )
+        .into_widget(),
+    );
 
     // The script: increment the shared counter, send typed messages — the beats
     // that show live cross-window sync.
     let beats = [
-        Beat { caption: "A second OS window opens, sharing the runtime", act: || {} },
-        Beat { caption: "+1 in the main window", act: || state::counter().update(|c| *c += 1) },
+        Beat {
+            caption: "A second OS window opens, sharing the runtime",
+            act: || {},
+        },
+        Beat {
+            caption: "+1 in the main window",
+            act: || state::counter().update(|c| *c += 1),
+        },
         Beat {
             caption: "+1 again — the other window already agrees",
             act: || state::counter().update(|c| *c += 1),
@@ -218,7 +277,10 @@ pub fn run(out_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
             caption: "Another message, delivered instantly",
             act: || state::ping().send("State syncs live across windows".into()),
         },
-        Beat { caption: "+1 — both windows in lockstep", act: || state::counter().update(|c| *c += 1) },
+        Beat {
+            caption: "+1 — both windows in lockstep",
+            act: || state::counter().update(|c| *c += 1),
+        },
     ];
 
     let mut manifest = std::fs::File::create(dir.join("manifest.txt"))?;
@@ -233,8 +295,22 @@ pub fn run(out_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
             let s = scene_for(&mut side, &mut env, SIDE_W, SIDE_H);
             gpu.rasterize(&s, SIDE_W, SIDE_H)
         };
-        dump(dir, &mut manifest, &format!("step{i}_main"), &main_px, MAIN_W, MAIN_H);
-        dump(dir, &mut manifest, &format!("step{i}_side"), &side_px, SIDE_W, SIDE_H);
+        dump(
+            dir,
+            &mut manifest,
+            &format!("step{i}_main"),
+            &main_px,
+            MAIN_W,
+            MAIN_H,
+        );
+        dump(
+            dir,
+            &mut manifest,
+            &format!("step{i}_side"),
+            &side_px,
+            SIDE_W,
+            SIDE_H,
+        );
         writeln!(manifest, "# step {i}: {}", beat.caption)?;
         env.finish_frame();
         eprintln!("  step {i}: {}", beat.caption);

@@ -1,11 +1,14 @@
-//! The root app component: a `Scaffold` with a `SideNav` and a `RouteView` body.
-//! The current route is a **global signal** (`state::route`) read here and written
-//! by the nav items — no prop-drilling.
+//! The root app component. Three top-level surfaces, chosen by the global route
+//! signal: the marketing **landing page** ([`screens::landing`]) and the searchable
+//! **component index** ([`screens::docs_index`]) are full-bleed pages with their own
+//! chrome; every other route is a **widget screen** shown in a `Scaffold` with a
+//! `SideNav` + `RouteView` body (the docs reading layout). The route is a global
+//! signal read here and written by the nav — no prop-drilling.
 
 use pebbles::prelude::*;
 
 use crate::screens;
-use crate::state::{NAV, label_for, navigate, route};
+use crate::state::{DOCS, LANDING, NAV, label_for, navigate, route, to_docs, to_landing};
 
 /// A small uppercase section header row for the sidebar.
 fn nav_section(label: &str) -> impl IntoWidget {
@@ -56,13 +59,24 @@ fn install_tour() {
     hop(std::rc::Rc::new(all), 0, key, (ms as f64 / 1000.0).max(0.05));
 }
 
-pub fn app() -> impl IntoWidget {
+pub fn app() -> AnyWidget {
     install_tour();
-    let c = theme().colors;
     let current = route().get();
 
+    // Top-level surfaces: landing + docs index are full-bleed pages of their own;
+    // everything else is a widget screen in the sidenav + content shell below.
+    match current.as_str() {
+        LANDING => return screens::landing::landing().into_widget(),
+        DOCS => return screens::docs_index::docs_index().into_widget(),
+        _ => {}
+    }
+
+    let c = theme().colors;
+
     // ----- side navigation -----
-    let brand = padding(
+    // The brand returns to the landing page; the row under it jumps back to the
+    // searchable component index.
+    let brand = pressable(padding(
         EdgeInsets::symmetric(6.0, 10.0),
         row(children![
             icon(lucide::GEM).size(20.0).color(c.primary),
@@ -70,11 +84,25 @@ pub fn app() -> impl IntoWidget {
             text("Pebbles").size(17.0).bold().color(c.foreground),
         ])
         .main_axis_size(MainAxisSize::Min),
-    );
+    ))
+    .radius(8.0)
+    .on_tap(to_landing);
+    let all_components = pressable(padding(
+        EdgeInsets::symmetric(6.0, 8.0),
+        row(children![
+            icon(lucide::ARROW_LEFT).size(15.0).color(c.muted_foreground),
+            gap_w(8.0),
+            text("All components").size(13.0).weight(500.0).color(c.muted_foreground),
+        ])
+        .main_axis_size(MainAxisSize::Min),
+    ))
+    .radius(8.0)
+    .on_tap(to_docs);
     let mut side = side_nav()
         .width(232.0)
         .header(brand)
         .footer(padding(EdgeInsets::all(6.0), muted("v0.0.1 · Solid-style on Vello")));
+    side = side.item(all_components);
     for group in NAV {
         side = side.item(nav_section(group.label));
         for (r, ic, label) in group.routes {
@@ -237,5 +265,5 @@ pub fn app() -> impl IntoWidget {
         .action(theme_toggle)
         .action(badge("v0.0.1").variant(BadgeVariant::Secondary));
 
-    scaffold(body).top(top).side(side)
+    scaffold(body).top(top).side(side).into_widget()
 }

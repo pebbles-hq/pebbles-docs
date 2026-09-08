@@ -50,8 +50,10 @@ pub fn route() -> Signal<String> {
     ROUTE.with(|cell| {
         let mut cell = cell.borrow_mut();
         if cell.is_none() {
-            // Dev hook: GALLERY_ROUTE=<route-id> opens straight on a screen.
-            let initial = std::env::var("GALLERY_ROUTE").unwrap_or_else(|_| String::from("overview"));
+            // Dev hook: GALLERY_ROUTE=<route-id> opens straight on a screen; default is
+            // the marketing landing page (the front door — the widget catalog now lives
+            // under `docs`).
+            let initial = std::env::var("GALLERY_ROUTE").unwrap_or_else(|_| String::from(LANDING));
             *cell = Some(create_signal(initial));
         }
         cell.unwrap()
@@ -62,6 +64,25 @@ pub fn route() -> Signal<String> {
 pub fn navigate(to: &str) {
     pebbles::core::log::info(pebbles::core::log::Cat::Nav, format!("navigate → {to}"));
     route().set(to.to_string());
+}
+
+/// The two top-level, non-widget routes. Everything else in [`NAV`] is a widget
+/// screen rendered in the docs sidenav + content layout.
+///
+/// - [`LANDING`] — the marketing landing page (the front door; no docs chrome).
+/// - [`DOCS`] — the searchable component index (categories → widget grid).
+pub const LANDING: &str = "landing";
+/// See [`LANDING`].
+pub const DOCS: &str = "docs";
+
+/// Go to the marketing landing page.
+pub fn to_landing() {
+    navigate(LANDING);
+}
+
+/// Go to the searchable component index (the docs home).
+pub fn to_docs() {
+    navigate(DOCS);
 }
 
 /// A single sidebar entry: (route id, icon, label).
@@ -77,7 +98,10 @@ pub struct NavGroup {
 /// The categorized sidebar. Groups mirror the component taxonomy
 /// (input / display / layout / navigation) plus foundations.
 pub const NAV: &[NavGroup] = &[
-    NavGroup { label: "GET STARTED", routes: &[("overview", lucide::LAYOUT_DASHBOARD, "Overview")] },
+    NavGroup {
+        label: "GET STARTED",
+        routes: &[("overview", lucide::LAYOUT_DASHBOARD, "Overview")],
+    },
     NavGroup {
         label: "INPUT",
         routes: &[
@@ -149,10 +173,22 @@ pub const NAV: &[NavGroup] = &[
             ("fade-transition", lucide::WAND, "Fade Transition"),
             ("scale-transition", lucide::WAND, "Scale Transition"),
             ("rotation-transition", lucide::WAND, "Rotation Transition"),
-            ("slide-transition", lucide::MOVE_VERTICAL, "Slide Transition"),
+            (
+                "slide-transition",
+                lucide::MOVE_VERTICAL,
+                "Slide Transition",
+            ),
             ("size-transition", lucide::BOX, "Size Transition"),
-            ("positioned-transition", lucide::LAYERS, "Positioned Transition"),
-            ("decorated-box-transition", lucide::PAINTBRUSH, "Decorated Box Transition"),
+            (
+                "positioned-transition",
+                lucide::LAYERS,
+                "Positioned Transition",
+            ),
+            (
+                "decorated-box-transition",
+                lucide::PAINTBRUSH,
+                "Decorated Box Transition",
+            ),
             ("animated-switcher", lucide::LAYERS, "Animated Switcher"),
             ("animated-cross-fade", lucide::LAYERS, "Animated Cross Fade"),
             ("dismissible", lucide::INBOX, "Dismissible"),
@@ -166,11 +202,23 @@ pub const NAV: &[NavGroup] = &[
         routes: &[
             ("draggable", lucide::MOVE_VERTICAL, "Draggable"),
             ("drag-target", lucide::INBOX, "Drag Target"),
-            ("long-press-draggable", lucide::MOVE_VERTICAL, "Long Press Draggable"),
+            (
+                "long-press-draggable",
+                lucide::MOVE_VERTICAL,
+                "Long Press Draggable",
+            ),
             ("ignore-pointer", lucide::BOX, "Ignore Pointer"),
             ("absorb-pointer", lucide::BOX, "Absorb Pointer"),
-            ("interactive-viewer", lucide::LAYOUT_GRID, "Interactive Viewer"),
-            ("reorderable-list-view", lucide::LIST_ORDERED, "Reorderable List View"),
+            (
+                "interactive-viewer",
+                lucide::LAYOUT_GRID,
+                "Interactive Viewer",
+            ),
+            (
+                "reorderable-list-view",
+                lucide::LIST_ORDERED,
+                "Reorderable List View",
+            ),
         ],
     },
     NavGroup {
@@ -183,10 +231,18 @@ pub const NAV: &[NavGroup] = &[
             ("rotated-box", lucide::WAND, "Rotated Box"),
             ("unconstrained-box", lucide::BOX, "Unconstrained Box"),
             ("sized-overflow-box", lucide::BOX, "Sized Overflow Box"),
-            ("fractional-translation", lucide::MOVE_VERTICAL, "Fractional Translation"),
+            (
+                "fractional-translation",
+                lucide::MOVE_VERTICAL,
+                "Fractional Translation",
+            ),
             ("table-layout", lucide::LAYOUT_GRID, "Table (layout)"),
             ("custom-single-child", lucide::BOX, "Custom Single Child"),
-            ("custom-multi-child", lucide::LAYOUT_GRID, "Custom Multi Child"),
+            (
+                "custom-multi-child",
+                lucide::LAYOUT_GRID,
+                "Custom Multi Child",
+            ),
             ("flow", lucide::WAND, "Flow"),
             ("layout-builder", lucide::COLUMNS_2, "Layout Builder"),
         ],
@@ -222,7 +278,11 @@ pub const NAV: &[NavGroup] = &[
         label: "ASYNC & A11Y",
         routes: &[
             ("stream-builder", lucide::WAND, "Stream Builder"),
-            ("semantics-combinators", lucide::INFO, "Semantics Combinators"),
+            (
+                "semantics-combinators",
+                lucide::INFO,
+                "Semantics Combinators",
+            ),
         ],
     },
     NavGroup {
@@ -230,7 +290,11 @@ pub const NAV: &[NavGroup] = &[
         routes: &[
             ("media-query", lucide::INFO, "Media Query"),
             ("safe-area", lucide::BOX, "Safe Area"),
-            ("orientation-builder", lucide::COLUMNS_2, "Orientation Builder"),
+            (
+                "orientation-builder",
+                lucide::COLUMNS_2,
+                "Orientation Builder",
+            ),
             ("scaffold-slots", lucide::LAYOUT_GRID, "Scaffold Slots"),
         ],
     },
@@ -239,7 +303,11 @@ pub const NAV: &[NavGroup] = &[
         routes: &[
             ("placeholder", lucide::BOX, "Placeholder"),
             ("banner", lucide::INFO, "Banner"),
-            ("scroll-notification", lucide::MOVE_VERTICAL, "Scroll Notification"),
+            (
+                "scroll-notification",
+                lucide::MOVE_VERTICAL,
+                "Scroll Notification",
+            ),
             ("list-body", lucide::LIST, "List Body"),
             ("list-tiles", lucide::LIST_CHECKS, "List Tiles"),
             ("draggable-sheet", lucide::PANEL_BOTTOM, "Draggable Sheet"),

@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return capture::run(&dir);
     }
     App::new(component(app::app))
-        .title("Pebbles — Widget Gallery")
+        .title("Pebbles — GUI Framework for Rust")
         .size(1180, 820)
         .background(theme().colors.background)
         // Web-only: the hidden-input IME bridge (CJK composition + mobile soft
