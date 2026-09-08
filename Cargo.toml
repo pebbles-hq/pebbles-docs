@@ -16,6 +16,8 @@ license = "Apache-2.0"
 
 [dependencies]
 pebbles = { git = "https://github.com/pebbles-hq/pebbles", features = ["image-view", "file-dialogs"] }
+# Dogfood our own editor package — the docs code blocks and the hero sample render with it.
+pebbles-code-editor = { git = "https://github.com/pebbles-hq/pebbles-code-editor" }
 
 # Headless demo capture (GALLERY_CAPTURE=<dir>). The framework now defaults to the
 # `vello-hybrid` backend, so `pebbles::render::Scene` is the hybrid op-list — the

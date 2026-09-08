@@ -8,6 +8,7 @@
 //! only the grid and the search field keeps focus.
 
 use pebbles::prelude::*;
+use pebbles_code_editor::{EditorTheme, code_editor, lang};
 
 use crate::state::{NAV, navigate};
 use crate::ui::{brand, gap_h, gap_w, is_compact};
@@ -325,19 +326,16 @@ pub(crate) fn p(s: &str) -> AnyWidget {
 }
 
 pub(crate) fn code(src: &str) -> AnyWidget {
-    let ink = Color::from_rgba8(0x0D, 0x11, 0x1B, 0xFF);
-    let fg = Color::from_rgba8(0xE6, 0xE9, 0xF2, 0xFF);
-    let lines: Vec<AnyWidget> = src
-        .lines()
-        .map(|l| text(l.to_string()).font_family("JetBrains Mono").size(13.0).line_height(1.7).color(fg).into_widget())
-        .collect();
+    // Dogfood the pebbles-code-editor package: a read-only, syntax-highlighted block.
+    let sig = create_signal(src.to_string());
+    let ed_theme = if theme().dark { EditorTheme::dark() } else { EditorTheme::light() };
     column(children![
-        container()
-            .decoration(BoxDecoration::new().color(ink).radius(BorderRadius::all(12.0)))
-            .padding(EdgeInsets::all(18.0))
-            .child(
-                column(lines).cross_axis_alignment(CrossAxisAlignment::Start).main_axis_size(MainAxisSize::Min),
-            ),
+        code_editor(sig)
+            .language(Box::new(lang::Rust))
+            .theme(ed_theme)
+            .read_only(true)
+            .gutter(false)
+            .font_size(13.0),
         gap_h(18.0),
     ])
     .cross_axis_alignment(CrossAxisAlignment::Stretch)

@@ -8,6 +8,7 @@ use pebbles::prelude::*;
 use crate::screens::mock::{desktop_mock, mobile_mock};
 use crate::state::to_components;
 use crate::ui::{brand, brand_gradient, gap_h, gap_w, is_compact, logo_mark};
+use pebbles_code_editor::{EditorTheme, code_editor, lang};
 
 /// The max content width; sections are full-bleed but their content is centered here.
 const MAXW: f64 = 1080.0;
@@ -240,83 +241,28 @@ fn features() -> impl IntoWidget {
 // Code sample
 // ---------------------------------------------------------------------------
 
-fn code_line(text_str: &str, tint: Color) -> impl IntoWidget {
-    text(text_str.to_string())
-        .font_family("JetBrains Mono")
-        .size(13.0)
-        .line_height(1.7)
-        .color(tint)
-}
+const COUNTER_SRC: &str = "fn counter() -> impl IntoWidget {\n    let count = create_signal(0);\n    column(children![\n        text(count.get().to_string()).size(48.0),\n        button(\"+\").on_pressed(move || {\n            count.update(|n| *n += 1);\n        }),\n    ])\n}";
 
 fn code_block() -> impl IntoWidget {
-    let ink = Color::from_rgba8(0x0D, 0x11, 0x1B, 0xFF);
-    let dot = |col: Color| {
-        container().width(11.0).height(11.0).decoration(
-            BoxDecoration::new()
-                .color(col)
-                .radius(BorderRadius::all(999.0)),
-        )
-    };
-    let base = Color::from_rgba8(0xE6, 0xE9, 0xF2, 0xFF);
-    let dim = Color::from_rgba8(0x8B, 0x93, 0xA7, 0xFF);
-    let kw = brand::TEAL;
-    let str_c = Color::from_rgba8(0x86, 0xEF, 0xAC, 0xFF);
-
-    // Cap at 520, but never wider than the viewport allows (so it fits on phones).
+    // The hero sample is rendered by our own pebbles-code-editor package (read-only).
     let cw = (media_query().size.width - 72.0).clamp(280.0, 520.0);
+    let sig = create_signal(String::from(COUNTER_SRC));
     container()
         .width(cw)
-        .decoration(
-            BoxDecoration::new()
-                .color(ink)
-                .radius(BorderRadius::all(14.0))
-                .shadow(BoxShadow::new(
-                    Color::from_rgba8(0x0B, 0x0F, 0x1E, 0x40),
-                    Offset::new(0.0, 24.0),
-                    50.0,
-                    -12.0,
-                )),
-        )
+        .decoration(BoxDecoration::new().radius(BorderRadius::all(14.0)).shadow(BoxShadow::new(
+            Color::from_rgba8(0x0B, 0x0F, 0x1E, 0x40),
+            Offset::new(0.0, 24.0),
+            50.0,
+            -12.0,
+        )))
+        .clip()
         .child(
-            column(children![
-                container().padding(EdgeInsets::all(14.0)).child(
-                    row(children![
-                        dot(Color::from_rgba8(0xFF, 0x5F, 0x57, 0xFF)),
-                        gap_w(7.0),
-                        dot(Color::from_rgba8(0xFE, 0xBC, 0x2E, 0xFF)),
-                        gap_w(7.0),
-                        dot(Color::from_rgba8(0x28, 0xC8, 0x40, 0xFF)),
-                        gap_w(14.0),
-                        text("counter.rs")
-                            .font_family("JetBrains Mono")
-                            .size(12.0)
-                            .color(dim),
-                    ])
-                    .main_axis_size(MainAxisSize::Min)
-                    .cross_axis_alignment(CrossAxisAlignment::Center),
-                ),
-                container()
-                    .padding(EdgeInsets::only(20.0, 4.0, 20.0, 22.0))
-                    .child(
-                        column(children![
-                            code_line("fn counter() -> impl IntoWidget {", base),
-                            code_line("    let count = create_signal(0);", kw),
-                            code_line("    column(children![", base),
-                            code_line("        text(count.get().to_string()).size(48.0),", base),
-                            code_line("        button(\"+\")", str_c),
-                            code_line(
-                                "            .on_pressed(move || count.update(|n| *n += 1)),",
-                                base
-                            ),
-                            code_line("    ])", base),
-                            code_line("}", base),
-                        ])
-                        .cross_axis_alignment(CrossAxisAlignment::Start)
-                        .main_axis_size(MainAxisSize::Min),
-                    ),
-            ])
-            .cross_axis_alignment(CrossAxisAlignment::Stretch)
-            .main_axis_size(MainAxisSize::Min),
+            code_editor(sig)
+                .language(Box::new(lang::Rust))
+                .theme(EditorTheme::dark())
+                .read_only(true)
+                .title("counter.rs")
+                .font_size(13.0),
         )
 }
 

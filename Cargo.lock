@@ -1219,6 +1219,7 @@ name = "gallery"
 version = "0.1.0"
 dependencies = [
  "pebbles",
+ "pebbles-code-editor",
  "pollster 1.0.1",
  "vello",
  "vello_hybrid",
@@ -2544,6 +2545,14 @@ dependencies = [
  "pebbles-render",
  "pebbles-shell",
  "pebbles-widgets",
+]
+
+[[package]]
+name = "pebbles-code-editor"
+version = "0.1.0"
+source = "git+https://github.com/pebbles-hq/pebbles-code-editor#481b37ac91b558c1bf05ca4423a24935ef3cc41d"
+dependencies = [
+ "pebbles",
 ]
 
 [[package]]
