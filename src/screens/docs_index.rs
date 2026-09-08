@@ -38,7 +38,7 @@ fn widget_card(route: &'static str, ic: IconData, label: &'static str) -> impl I
                                 .radius(BorderRadius::all(9.0))
                         )
                         .padding(EdgeInsets::all(8.0))
-                        .child(icon(ic).size(16.0).color(brand::INDIGO)),
+                        .child(icon(ic).size(16.0).color(brand::BROWN)),
                     gap_w(11.0),
                     expanded(
                         text(label.to_string())
@@ -165,9 +165,6 @@ pub fn docs_index() -> Element {
         .width(680.0)
         .bind(query);
 
-    // Everything is centered in a bounded column — the page is NOT full-bleed; the
-    // content sits in a max-width block centered on the page (title, search, and the
-    // category grid all share the same centered axis).
     // Only the WRAPPER is centered on the page — a max-width block. Inside it, the
     // title, search, and category grid are all LEFT-aligned (cross Start).
     let body = scroll_view(

@@ -5,7 +5,7 @@
 use pebbles::prelude::*;
 
 use crate::state::{to_docs, to_landing};
-use crate::ui::{brand_gradient, gap_w};
+use crate::ui::{gap_w, logo_mark};
 
 /// A muted text link in the nav.
 fn nav_link(label: &str, on: impl Fn() + 'static) -> impl IntoWidget {
@@ -19,16 +19,13 @@ fn nav_link(label: &str, on: impl Fn() + 'static) -> impl IntoWidget {
     .on_tap(on)
 }
 
-/// The brand mark (gradient gem + wordmark) — clicking it returns to the landing page.
+/// The brand mark (mascot logo + wordmark) — clicking it returns to the landing page.
 fn brand_mark() -> impl IntoWidget {
     let c = theme().colors;
     pressable(
         row(children![
-            container()
-                .decoration(BoxDecoration::new().gradient(brand_gradient()).radius(BorderRadius::all(9.0)))
-                .padding(EdgeInsets::all(6.0))
-                .child(icon(lucide::GEM).size(17.0).color(palette::WHITE)),
-            gap_w(10.0),
+            logo_mark(34.0),
+            gap_w(9.0),
             text("Pebbles").size(18.0).bold().color(c.foreground),
         ])
         .main_axis_size(MainAxisSize::Min)

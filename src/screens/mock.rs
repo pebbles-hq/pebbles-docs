@@ -24,7 +24,7 @@ fn dot(color: Color) -> impl IntoWidget {
 fn rail_item(ic: IconData, label: &str, selected: bool) -> impl IntoWidget {
     let c = theme().colors;
     let fg = if selected {
-        brand::INDIGO
+        brand::BROWN
     } else {
         c.muted_foreground
     };
@@ -96,7 +96,7 @@ fn kpi(label: &str, value: &str, delta: &str, tint: Color) -> impl IntoWidget {
 fn bar(h: f64) -> impl IntoWidget {
     container().width(16.0).height(h).decoration(
         BoxDecoration::new()
-            .gradient(Gradient::vertical([brand::VIOLET, brand::INDIGO]))
+            .gradient(Gradient::vertical([brand::TAN, brand::BROWN]))
             .radius(BorderRadius::all(4.0)),
     )
 }
@@ -213,11 +213,11 @@ pub fn desktop_mock() -> impl IntoWidget {
                 .cross_axis_alignment(CrossAxisAlignment::Center),
                 gap_h(14.0),
                 row(children![
-                    kpi("Revenue", "$48.2k", "+12.4%", brand::INDIGO),
+                    kpi("Revenue", "$48.2k", "+12.4%", brand::BROWN),
                     gap_w(10.0),
-                    kpi("Active", "2,940", "+4.1%", brand::CYAN),
+                    kpi("Active", "2,940", "+4.1%", brand::TEAL),
                     gap_w(10.0),
-                    kpi("Churn", "1.8%", "-0.3%", brand::PINK),
+                    kpi("Churn", "1.8%", "-0.3%", brand::NOSE),
                 ]),
                 gap_h(16.0),
                 container()
@@ -261,12 +261,12 @@ pub fn desktop_mock() -> impl IntoWidget {
                     "Acme Inc.",
                     "Enterprise · seat +12",
                     "$2,400",
-                    brand::INDIGO
+                    brand::BROWN
                 ),
                 gap_h(10.0),
-                list_row("Globex", "Pro · renewed", "$780", brand::CYAN),
+                list_row("Globex", "Pro · renewed", "$780", brand::TEAL),
                 gap_h(10.0),
-                list_row("Umbrella", "Starter · upgraded", "$120", brand::PINK),
+                list_row("Umbrella", "Starter · upgraded", "$120", brand::NOSE),
             ])
             .cross_axis_alignment(CrossAxisAlignment::Stretch)
             .main_axis_size(MainAxisSize::Min),
@@ -343,7 +343,7 @@ fn phone_row(ic: IconData, tint: Color, title: &str, sub: &str) -> impl IntoWidg
 fn tab(ic: IconData, active: bool) -> impl IntoWidget {
     let c = theme().colors;
     expanded(center(icon(ic).size(19.0).color(if active {
-        brand::INDIGO
+        brand::BROWN
     } else {
         c.muted_foreground
     })))
@@ -395,16 +395,16 @@ pub fn mobile_mock() -> impl IntoWidget {
                         gap_h(12.0),
                         phone_row(
                             lucide::CREDIT_CARD,
-                            brand::INDIGO,
+                            brand::BROWN,
                             "Apple Store",
                             "Today · Shopping"
                         ),
                         gap_h(14.0),
-                        phone_row(lucide::HOUSE, brand::CYAN, "Rent", "Yesterday · Housing"),
+                        phone_row(lucide::HOUSE, brand::TEAL, "Rent", "Yesterday · Housing"),
                         gap_h(14.0),
                         phone_row(
                             lucide::COFFEE,
-                            brand::PINK,
+                            brand::NOSE,
                             "Blue Bottle",
                             "Yesterday · Food"
                         ),

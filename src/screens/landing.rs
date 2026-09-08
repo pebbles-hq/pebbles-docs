@@ -7,7 +7,7 @@ use pebbles::prelude::*;
 
 use crate::screens::mock::{desktop_mock, mobile_mock};
 use crate::state::to_docs;
-use crate::ui::{brand, brand_gradient, gap_h, gap_w};
+use crate::ui::{brand, brand_gradient, gap_h, gap_w, logo_mark};
 
 /// The max content width; sections are full-bleed but their content is centered here.
 const MAXW: f64 = 1080.0;
@@ -76,14 +76,14 @@ fn hero() -> impl IntoWidget {
     let c = theme().colors;
     let dark = theme().dark;
     let hero_bg = if dark {
-        Color::from_rgba8(0x0E, 0x12, 0x22, 0xFF)
+        Color::from_rgba8(0x1C, 0x16, 0x12, 0xFF)
     } else {
-        Color::from_rgba8(0xF6, 0xF5, 0xFF, 0xFF)
+        Color::from_rgba8(0xFA, 0xF5, 0xEE, 0xFF)
     };
 
     let headline = column(children![
         text("Beautiful native UIs,").size(52.0).bold().color(c.foreground),
-        text("written in Rust.").size(52.0).bold().color(brand::INDIGO),
+        text("written in Rust.").size(52.0).bold().color(brand::BROWN),
     ])
     .cross_axis_alignment(CrossAxisAlignment::Center)
     .main_axis_size(MainAxisSize::Min);
@@ -211,11 +211,11 @@ fn features() -> impl IntoWidget {
             gap_h(36.0),
             center(
                 wrap(children![
-                    feature_card(lucide::ZAP, brand::INDIGO, "SolidJS-style reactivity", "Fine-grained signals drive the tree. One create_signal primitive for local and global state — no prop-drilling, no VDOM diffing."),
-                    feature_card(lucide::LAYOUT_GRID, brand::VIOLET, "60+ styled components", "Buttons, inputs, dialogs, sheets, data tables, command palette — a full shadcn-flavored catalog, themeable light and dark."),
-                    feature_card(lucide::CPU, brand::CYAN, "GPU rendering via Vello", "Every frame is rasterized on the GPU. Sub-pixel text, gradients, blurs and clips — smooth at any window size."),
+                    feature_card(lucide::ZAP, brand::BROWN, "SolidJS-style reactivity", "Fine-grained signals drive the tree. One create_signal primitive for local and global state — no prop-drilling, no VDOM diffing."),
+                    feature_card(lucide::LAYOUT_GRID, brand::TAN, "60+ styled components", "Buttons, inputs, dialogs, sheets, data tables, command palette — a full shadcn-flavored catalog, themeable light and dark."),
+                    feature_card(lucide::CPU, brand::TEAL, "GPU rendering via Vello", "Every frame is rasterized on the GPU. Sub-pixel text, gradients, blurs and clips — smooth at any window size."),
                     feature_card(lucide::MONITOR_SMARTPHONE, palette::GREEN, "One codebase, everywhere", "The same widget tree runs on desktop (winit + wgpu), the web (WebGPU/wasm), and mobile shells."),
-                    feature_card(lucide::WAND, brand::PINK, "Motion built in", "Implicit and explicit animation widgets — animated containers, transitions, hero flights — with springs and curves."),
+                    feature_card(lucide::WAND, brand::NOSE, "Motion built in", "Implicit and explicit animation widgets — animated containers, transitions, hero flights — with springs and curves."),
                     feature_card(lucide::SHIELD_CHECK, palette::AMBER, "Type-safe & fast", "Plain functions and closures, no macros to learn. Rust's borrow checker, zero GC pauses, predictable memory."),
                 ])
                 .spacing(18.0)
@@ -251,7 +251,7 @@ fn code_block() -> impl IntoWidget {
     };
     let base = Color::from_rgba8(0xE6, 0xE9, 0xF2, 0xFF);
     let dim = Color::from_rgba8(0x8B, 0x93, 0xA7, 0xFF);
-    let kw = brand::CYAN;
+    let kw = brand::TEAL;
     let str_c = Color::from_rgba8(0x86, 0xEF, 0xAC, 0xFF);
 
     container()
@@ -314,9 +314,9 @@ fn code_section() -> impl IntoWidget {
     let c = theme().colors;
     let dark = theme().dark;
     let bg = if dark {
-        Color::from_rgba8(0x0E, 0x12, 0x22, 0xFF)
+        Color::from_rgba8(0x1C, 0x16, 0x12, 0xFF)
     } else {
-        Color::from_rgba8(0xF7, 0xF7, 0xFB, 0xFF)
+        Color::from_rgba8(0xF8, 0xF4, 0xED, 0xFF)
     };
 
     let copy = container()
@@ -378,7 +378,7 @@ fn bullet(ic: IconData, label: &str) -> impl IntoWidget {
                     .radius(BorderRadius::all(999.0))
             )
             .padding(EdgeInsets::all(4.0))
-            .child(icon(ic).size(13.0).color(brand::INDIGO)),
+            .child(icon(ic).size(13.0).color(brand::BROWN)),
         gap_w(11.0),
         text(label.to_string()).size(14.5).color(c.foreground),
     ])
@@ -411,7 +411,7 @@ fn cta() -> impl IntoWidget {
                         button("Explore the components")
                             .size(ButtonSize::Lg)
                             .color(palette::WHITE)
-                            .text_color(brand::INDIGO)
+                            .text_color(brand::BROWN)
                             .trailing(lucide::ARROW_RIGHT)
                             .on_pressed(to_docs),
                     ),
@@ -434,7 +434,7 @@ fn footer() -> impl IntoWidget {
             gap_h(22.0),
             row(children![
                 row(children![
-                    icon(lucide::GEM).size(16.0).color(brand::INDIGO),
+                    logo_mark(24.0),
                     gap_w(8.0),
                     text("Pebbles").size(15.0).bold().color(c.foreground),
                 ])

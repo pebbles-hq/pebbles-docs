@@ -10,31 +10,47 @@ use pebbles::prelude::*;
 
 pub use pebbles::prelude::{gap_h, gap_w};
 
-/// Brand accent colors for the marketing surfaces (landing page + component index).
-/// Kept independent of the shadcn theme so the hero gradient and accents stay vivid
-/// in both light and dark mode.
+/// Brand accent colors, sampled from the Pebbles mascot (`assets/pebbles.png`) — the
+/// warm fur browns + cream, the pink nose, and the console teal. Kept independent of
+/// the shadcn theme so the accents read the same in light and dark mode.
 pub mod brand {
     use pebbles::prelude::Color;
 
-    /// Indigo — the primary brand hue.
-    pub const INDIGO: Color = Color::from_rgba8(0x63, 0x66, 0xF1, 0xFF);
-    /// Violet — the gradient midpoint.
-    pub const VIOLET: Color = Color::from_rgba8(0x8B, 0x5C, 0xF6, 0xFF);
-    /// Cyan — the gradient end / highlight.
-    pub const CYAN: Color = Color::from_rgba8(0x22, 0xD3, 0xEE, 0xFF);
-    /// Pink — a secondary accent.
-    pub const PINK: Color = Color::from_rgba8(0xEC, 0x48, 0x99, 0xFF);
-    /// Deep ink used behind the hero in light mode.
-    pub const INK: Color = Color::from_rgba8(0x0B, 0x0F, 0x1E, 0xFF);
+    /// Light fur tan (gradient start).
+    pub const TAN: Color = Color::from_rgba8(0xC9, 0x9E, 0x76, 0xFF);
+    /// Primary fur brown — the signature brand hue.
+    pub const BROWN: Color = Color::from_rgba8(0x9C, 0x6E, 0x4C, 0xFF);
+    /// Deep fur / outline brown (gradient end).
+    pub const COCOA: Color = Color::from_rgba8(0x5F, 0x40, 0x2E, 0xFF);
+    /// Pink nose — a soft accent.
+    pub const NOSE: Color = Color::from_rgba8(0xDD, 0x93, 0x94, 0xFF);
+    /// Console-text teal — a cool accent.
+    pub const TEAL: Color = Color::from_rgba8(0x4E, 0x9C, 0x8C, 0xFF);
+    /// Warm near-black (the mascot's outline) — behind the hero in dark mode.
+    pub const INK: Color = Color::from_rgba8(0x25, 0x1F, 0x1B, 0xFF);
 }
 
-/// The signature diagonal brand gradient (indigo → violet → cyan).
+/// The signature diagonal brand gradient — warm fur tones (tan → brown → cocoa).
 pub fn brand_gradient() -> Gradient {
-    Gradient::linear(
-        Alignment::TOP_LEFT,
-        Alignment::BOTTOM_RIGHT,
-        [brand::INDIGO, brand::VIOLET, brand::CYAN],
-    )
+    Gradient::linear(Alignment::TOP_LEFT, Alignment::BOTTOM_RIGHT, [brand::TAN, brand::BROWN, brand::COCOA])
+}
+
+/// The Pebbles mascot logo, decoded once per thread and cached (used in the top nav
+/// and the footer). `None` if the bundled PNG fails to decode.
+pub fn logo() -> Option<Image> {
+    thread_local! {
+        static LOGO: Option<Image> = image_from_bytes(include_bytes!("../assets/pebbles.png"));
+    }
+    LOGO.with(|l| l.clone())
+}
+
+/// The mascot logo at `size`×`size` (contained, never cropped), falling back to a gem
+/// glyph if the bundled image can't be decoded. The brand mark in the nav/footer.
+pub fn logo_mark(size: f64) -> AnyWidget {
+    match logo() {
+        Some(img) => ImageView::image(img).fit(ImageFit::Contain).width(size).height(size).into_widget(),
+        None => icon(lucide::GEM).size(size * 0.6).color(brand::BROWN).into_widget(),
+    }
 }
 
 /// A scrollable, padded screen with a heading + subtitle.
