@@ -13,6 +13,8 @@ thread_local! {
     static ROUTE: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
     static COUNTER: RefCell<Option<Signal<i32>>> = const { RefCell::new(None) };
     static PING: RefCell<Option<Channel<String>>> = const { RefCell::new(None) };
+    static DOC_SECTION: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
+    static LEARN_SECTION: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
 }
 
 /// Create the global app-scope state (call once, before any component renders, so
@@ -21,6 +23,8 @@ pub fn init() {
     let _ = route();
     let _ = counter();
     let _ = ping();
+    let _ = doc_section();
+    let _ = learn_section();
 }
 
 /// A counter shared across every window (the same signal, read by capture).
@@ -74,15 +78,62 @@ pub fn navigate(to: &str) {
 pub const LANDING: &str = "landing";
 /// See [`LANDING`].
 pub const DOCS: &str = "docs";
+/// The guided tutorial hub (teaching path), see [`LANDING`].
+pub const LEARN: &str = "learn";
 
 /// Go to the marketing landing page.
 pub fn to_landing() {
     navigate(LANDING);
 }
 
-/// Go to the searchable component index (the docs home).
-pub fn to_docs() {
+/// The docs hub's active section id (which sidenav page is open). Global so the top
+/// nav can open the hub *at* a section, not just its front page.
+pub fn doc_section() -> Signal<String> {
+    DOC_SECTION.with(|cell| {
+        let mut cell = cell.borrow_mut();
+        if cell.is_none() {
+            *cell = Some(create_signal(String::from("introduction")));
+        }
+        cell.unwrap()
+    })
+}
+
+/// Open the docs hub on a specific section (sets the section, then navigates).
+pub fn open_docs(section: &str) {
+    doc_section().set(section.to_string());
     navigate(DOCS);
+}
+
+/// Go to the docs hub on its first page (Introduction).
+pub fn to_docs() {
+    open_docs("introduction");
+}
+
+/// Go to the docs hub on the Components catalog.
+pub fn to_components() {
+    open_docs("catalog");
+}
+
+/// The learn hub's active lesson id.
+pub fn learn_section() -> Signal<String> {
+    LEARN_SECTION.with(|cell| {
+        let mut cell = cell.borrow_mut();
+        if cell.is_none() {
+            *cell = Some(create_signal(String::from("welcome")));
+        }
+        cell.unwrap()
+    })
+}
+
+/// Open the guided-tutorial hub on a specific lesson (sets the lesson, then navigates).
+pub fn open_learn(section: &str) {
+    learn_section().set(section.to_string());
+    navigate(LEARN);
+}
+
+/// Go to the Learn hub on its first lesson.
+pub fn to_learn() {
+    open_learn("welcome");
 }
 
 /// A single sidebar entry: (route id, icon, label).

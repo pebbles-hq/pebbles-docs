@@ -8,7 +8,7 @@
 use pebbles::prelude::*;
 
 use crate::screens;
-use crate::state::{DOCS, LANDING, NAV, group_of, navigate, route, to_docs};
+use crate::state::{DOCS, LANDING, LEARN, NAV, group_of, navigate, route, to_components};
 
 /// A small uppercase section header row for the sidebar.
 fn nav_section(label: &str) -> impl IntoWidget {
@@ -67,6 +67,7 @@ pub fn app() -> AnyWidget {
     // everything else is a widget screen in the sidenav + content shell below.
     match current.as_str() {
         LANDING => return screens::landing::landing().into_widget(),
+        LEARN => return screens::learn::learn().into_widget(),
         DOCS => return screens::docs::docs().into_widget(),
         _ => {}
     }
@@ -87,7 +88,7 @@ pub fn app() -> AnyWidget {
         .main_axis_size(MainAxisSize::Min),
     ))
     .radius(8.0)
-    .on_tap(to_docs);
+    .on_tap(to_components);
     let mut side = side_nav()
         .width(232.0)
         .header(all_components)

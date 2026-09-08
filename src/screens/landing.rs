@@ -6,7 +6,7 @@
 use pebbles::prelude::*;
 
 use crate::screens::mock::{desktop_mock, mobile_mock};
-use crate::state::to_docs;
+use crate::state::to_components;
 use crate::ui::{brand, brand_gradient, gap_h, gap_w, logo_mark};
 
 /// The max content width; sections are full-bleed but their content is centered here.
@@ -104,7 +104,7 @@ fn hero() -> impl IntoWidget {
             .variant(ButtonVariant::Primary)
             .size(ButtonSize::Lg)
             .leading(lucide::LAYOUT_GRID)
-            .on_pressed(to_docs),
+            .on_pressed(to_components),
         gap_w(12.0),
         button("View on GitHub")
             .variant(ButtonVariant::Outline)
@@ -413,7 +413,7 @@ fn cta() -> impl IntoWidget {
                             .color(palette::WHITE)
                             .text_color(brand::BROWN)
                             .trailing(lucide::ARROW_RIGHT)
-                            .on_pressed(to_docs),
+                            .on_pressed(to_components),
                     ),
                 ])
                 .cross_axis_alignment(CrossAxisAlignment::Stretch)

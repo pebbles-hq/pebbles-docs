@@ -4,7 +4,7 @@
 
 use pebbles::prelude::*;
 
-use crate::state::{to_docs, to_landing};
+use crate::state::{to_components, to_docs, to_landing, to_learn};
 use crate::ui::{gap_w, logo_mark};
 
 /// A muted text link in the nav.
@@ -48,13 +48,17 @@ pub fn top_nav() -> impl IntoWidget {
             brand_mark(),
             spacer(),
             row(children![
-                nav_link("Components", to_docs),
+                nav_link("Learn", to_learn),
+                gap_w(2.0),
+                nav_link("Docs", to_docs),
+                gap_w(2.0),
+                nav_link("Components", to_components),
                 gap_w(2.0),
                 nav_link("GitHub", || eprintln!("open https://github.com/pebbles-hq/pebbles")),
                 gap_w(12.0),
                 theme_toggle,
                 gap_w(6.0),
-                button("Get started").size(ButtonSize::Sm).trailing(lucide::ARROW_RIGHT).on_pressed(to_docs),
+                button("Get started").size(ButtonSize::Sm).trailing(lucide::ARROW_RIGHT).on_pressed(to_learn),
             ])
             .main_axis_size(MainAxisSize::Min)
             .cross_axis_alignment(CrossAxisAlignment::Center),

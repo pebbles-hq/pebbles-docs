@@ -16,10 +16,10 @@ use crate::ui::{brand, gap_h, gap_w};
 // Section registry
 // ---------------------------------------------------------------------------
 
-/// A labelled group of doc sections in the sidenav.
-struct DocGroup {
-    label: &'static str,
-    items: &'static [(&'static str, &'static str)], // (section id, label)
+/// A labelled group of doc/lesson sections in the sidenav (shared by the Learn hub).
+pub(crate) struct DocGroup {
+    pub label: &'static str,
+    pub items: &'static [(&'static str, &'static str)], // (section id, label)
 }
 
 /// The docs sidenav — standard "learn the framework" sections, with the Widgets and
@@ -66,7 +66,7 @@ const DOCS: &[DocGroup] = &[
 // Sidenav
 // ---------------------------------------------------------------------------
 
-fn nav_row(id: &'static str, label: &'static str, active: bool, section: Signal<String>) -> impl IntoWidget {
+pub(crate) fn nav_row(id: &'static str, label: &'static str, active: bool, section: Signal<String>) -> impl IntoWidget {
     let c = theme().colors;
     let (fg, deco) = if active {
         (
@@ -86,10 +86,10 @@ fn nav_row(id: &'static str, label: &'static str, active: bool, section: Signal<
     .on_tap(move || section.set(id.to_string()))
 }
 
-fn sidenav(active: &str, section: Signal<String>) -> impl IntoWidget {
+pub(crate) fn sidenav(groups: &'static [DocGroup], active: &str, section: Signal<String>) -> impl IntoWidget {
     let c = theme().colors;
     let mut items: Vec<AnyWidget> = Vec::new();
-    for (gi, group) in DOCS.iter().enumerate() {
+    for (gi, group) in groups.iter().enumerate() {
         if gi > 0 {
             items.push(gap_h(16.0).into_widget());
         }
@@ -265,7 +265,7 @@ fn catalog(title: &str, blurb: &str, query: Signal<String>, widgets: bool) -> An
 // Prose content — building blocks
 // ---------------------------------------------------------------------------
 
-fn h2(s: &str) -> AnyWidget {
+pub(crate) fn h2(s: &str) -> AnyWidget {
     let c = theme().colors;
     column(children![gap_h(10.0), text(s.to_string()).size(20.0).bold().color(c.foreground), gap_h(8.0)])
         .cross_axis_alignment(CrossAxisAlignment::Start)
@@ -273,7 +273,7 @@ fn h2(s: &str) -> AnyWidget {
         .into_widget()
 }
 
-fn p(s: &str) -> AnyWidget {
+pub(crate) fn p(s: &str) -> AnyWidget {
     let c = theme().colors;
     column(children![text(s.to_string()).size(15.0).line_height(1.65).color(c.muted_foreground), gap_h(14.0)])
         .cross_axis_alignment(CrossAxisAlignment::Start)
@@ -281,7 +281,7 @@ fn p(s: &str) -> AnyWidget {
         .into_widget()
 }
 
-fn code(src: &str) -> AnyWidget {
+pub(crate) fn code(src: &str) -> AnyWidget {
     let ink = Color::from_rgba8(0x0D, 0x11, 0x1B, 0xFF);
     let fg = Color::from_rgba8(0xE6, 0xE9, 0xF2, 0xFF);
     let lines: Vec<AnyWidget> = src
@@ -302,7 +302,7 @@ fn code(src: &str) -> AnyWidget {
     .into_widget()
 }
 
-fn prose(title: &str, subtitle: &str, blocks: Vec<AnyWidget>) -> AnyWidget {
+pub(crate) fn prose(title: &str, subtitle: &str, blocks: Vec<AnyWidget>) -> AnyWidget {
     let c = theme().colors;
     let mut items: Vec<AnyWidget> = vec![
         text(title.to_string()).size(32.0).bold().color(c.foreground).into_widget(),
@@ -485,7 +485,9 @@ fn page(id: &str) -> AnyWidget {
 /// The docs page: shared top nav, a learning sidenav, and a content pane whose last
 /// two sidenav entries (Widgets, Components) show the searchable catalog.
 pub fn docs() -> Element {
-    let section = create_signal(String::from("introduction"));
+    // Global so the top nav can open the hub at a specific section (Docs → Introduction,
+    // Components → the catalog).
+    let section = crate::state::doc_section();
     let query = create_signal(String::new());
     let active = section.get();
 
@@ -514,7 +516,7 @@ pub fn docs() -> Element {
     column(children![
         crate::site_nav::top_nav(),
         expanded(
-            row(children![sidenav(&active, section), content_pane])
+            row(children![sidenav(DOCS, &active, section), content_pane])
                 .cross_axis_alignment(CrossAxisAlignment::Stretch),
         ),
     ])

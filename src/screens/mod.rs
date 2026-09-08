@@ -35,6 +35,7 @@ pub mod images;
 pub mod inputs_extra;
 pub mod kbd;
 pub mod landing;
+pub mod learn;
 pub mod layout_extra;
 pub mod list;
 pub mod list_view;
