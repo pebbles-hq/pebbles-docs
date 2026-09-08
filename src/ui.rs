@@ -35,6 +35,16 @@ pub fn brand_gradient() -> Gradient {
     Gradient::linear(Alignment::TOP_LEFT, Alignment::BOTTOM_RIGHT, [brand::TAN, brand::BROWN, brand::COCOA])
 }
 
+/// Below this logical width the layout goes "compact": the top-nav links collapse
+/// behind a menu button and the docs/learn sidebars move into a drawer.
+pub const COMPACT_W: f64 = 900.0;
+
+/// Whether the viewport is currently compact. Reactive — reading `media_query()`
+/// subscribes the caller, so layouts re-flow live as the window resizes.
+pub fn is_compact() -> bool {
+    media_query().size.width < COMPACT_W
+}
+
 /// The Pebbles mascot logo, decoded once per thread and cached (used in the top nav
 /// and the footer). `None` if the bundled PNG fails to decode.
 pub fn logo() -> Option<Image> {

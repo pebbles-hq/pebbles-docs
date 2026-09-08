@@ -7,7 +7,7 @@ use pebbles::prelude::*;
 
 use crate::screens::mock::{desktop_mock, mobile_mock};
 use crate::state::to_components;
-use crate::ui::{brand, brand_gradient, gap_h, gap_w, logo_mark};
+use crate::ui::{brand, brand_gradient, gap_h, gap_w, is_compact, logo_mark};
 
 /// The max content width; sections are full-bleed but their content is centered here.
 const MAXW: f64 = 1080.0;
@@ -75,6 +75,8 @@ fn chip(ic: IconData, label: &str) -> impl IntoWidget {
 fn hero() -> impl IntoWidget {
     let c = theme().colors;
     let dark = theme().dark;
+    let compact = is_compact();
+    let hsize = if compact { 34.0 } else { 52.0 };
     let hero_bg = if dark {
         Color::from_rgba8(0x1C, 0x16, 0x12, 0xFF)
     } else {
@@ -82,8 +84,8 @@ fn hero() -> impl IntoWidget {
     };
 
     let headline = column(children![
-        text("Beautiful native UIs,").size(52.0).bold().color(c.foreground),
-        text("written in Rust.").size(52.0).bold().color(brand::BROWN),
+        text("Beautiful native UIs,").size(hsize).bold().color(c.foreground),
+        text("written in Rust.").size(hsize).bold().color(brand::BROWN),
     ])
     .cross_axis_alignment(CrossAxisAlignment::Center)
     .main_axis_size(MainAxisSize::Min);
@@ -124,14 +126,20 @@ fn hero() -> impl IntoWidget {
     .run_spacing(10.0)
     .alignment(WrapAlignment::Center);
 
-    // Desktop + phone mocks, side by side (phone bottom-aligned to the window).
-    let showcase = row(children![desktop_mock(), gap_w(28.0), mobile_mock()])
-        .main_axis_size(MainAxisSize::Min)
-        .cross_axis_alignment(CrossAxisAlignment::End);
+    // Desktop + phone mocks side by side; on a compact viewport the desktop window is
+    // too wide, so show just the phone.
+    let showcase: AnyWidget = if compact {
+        mobile_mock().into_widget()
+    } else {
+        row(children![desktop_mock(), gap_w(28.0), mobile_mock()])
+            .main_axis_size(MainAxisSize::Min)
+            .cross_axis_alignment(CrossAxisAlignment::End)
+            .into_widget()
+    };
 
     band(
         Some(hero_bg),
-        64.0,
+        if compact { 40.0 } else { 64.0 },
         column(children![
             center(gradient_pill("v0.0.1 · pure Rust · GPU-native")),
             gap_h(26.0),
@@ -254,8 +262,10 @@ fn code_block() -> impl IntoWidget {
     let kw = brand::TEAL;
     let str_c = Color::from_rgba8(0x86, 0xEF, 0xAC, 0xFF);
 
+    // Cap at 520, but never wider than the viewport allows (so it fits on phones).
+    let cw = (media_query().size.width - 72.0).clamp(280.0, 520.0);
     container()
-        .width(520.0)
+        .width(cw)
         .decoration(
             BoxDecoration::new()
                 .color(ink)
@@ -461,18 +471,23 @@ pub fn landing() -> Element {
     // area the fixed window clear-color would show through) track light/dark on toggle.
     container()
         .color(theme().colors.background)
-        .child(scroll_view(
-            column(children![
-                crate::site_nav::top_nav(),
-                hero(),
-                features(),
-                code_section(),
-                cta(),
-                gap_h(10.0),
-                footer(),
-            ])
-            .cross_axis_alignment(CrossAxisAlignment::Stretch)
-            .main_axis_size(MainAxisSize::Min),
-        ))
+        .child(stack(children![
+            scroll_view(
+                column(children![
+                    crate::site_nav::top_nav(),
+                    hero(),
+                    features(),
+                    code_section(),
+                    cta(),
+                    gap_h(10.0),
+                    footer(),
+                ])
+                .cross_axis_alignment(CrossAxisAlignment::Stretch)
+                .main_axis_size(MainAxisSize::Min),
+            ),
+            crate::site_nav::mobile_menu(Vec::new()),
+        ])
+        .fit(StackFit::Expand)
+        .alignment(Alignment::TOP_LEFT))
         .into_widget()
 }

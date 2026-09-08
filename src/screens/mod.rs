@@ -58,6 +58,7 @@ pub mod rows;
 pub mod scrolling;
 pub mod selects;
 pub mod separator;
+pub mod showcase;
 pub mod sheets;
 pub mod skeleton;
 pub mod sliders;

@@ -15,6 +15,7 @@ thread_local! {
     static PING: RefCell<Option<Channel<String>>> = const { RefCell::new(None) };
     static DOC_SECTION: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
     static LEARN_SECTION: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
+    static MENU_OPEN: RefCell<Option<Signal<bool>>> = const { RefCell::new(None) };
 }
 
 /// Create the global app-scope state (call once, before any component renders, so
@@ -25,6 +26,7 @@ pub fn init() {
     let _ = ping();
     let _ = doc_section();
     let _ = learn_section();
+    let _ = menu_open();
 }
 
 /// A counter shared across every window (the same signal, read by capture).
@@ -80,6 +82,8 @@ pub const LANDING: &str = "landing";
 pub const DOCS: &str = "docs";
 /// The guided tutorial hub (teaching path), see [`LANDING`].
 pub const LEARN: &str = "learn";
+/// The showcase — apps built with Pebbles, see [`LANDING`].
+pub const SHOWCASE: &str = "showcase";
 
 /// Go to the marketing landing page.
 pub fn to_landing() {
@@ -134,6 +138,32 @@ pub fn open_learn(section: &str) {
 /// Go to the Learn hub on its first lesson.
 pub fn to_learn() {
     open_learn("welcome");
+}
+
+/// Go to the Showcase — apps built with Pebbles.
+pub fn to_showcase() {
+    navigate(SHOWCASE);
+}
+
+/// Whether the compact (mobile) navigation drawer is open.
+pub fn menu_open() -> Signal<bool> {
+    MENU_OPEN.with(|cell| {
+        let mut cell = cell.borrow_mut();
+        if cell.is_none() {
+            *cell = Some(create_signal(false));
+        }
+        cell.unwrap()
+    })
+}
+
+/// Toggle the mobile navigation drawer.
+pub fn toggle_menu() {
+    menu_open().update(|o| *o = !*o);
+}
+
+/// Close the mobile navigation drawer (called on navigate / scrim tap).
+pub fn close_menu() {
+    menu_open().set(false);
 }
 
 /// A single sidebar entry: (route id, icon, label).

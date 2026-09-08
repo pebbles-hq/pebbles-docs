@@ -10,7 +10,7 @@
 use pebbles::prelude::*;
 
 use crate::state::{NAV, navigate};
-use crate::ui::{brand, gap_h, gap_w};
+use crate::ui::{brand, gap_h, gap_w, is_compact};
 
 // ---------------------------------------------------------------------------
 // Section registry
@@ -114,6 +114,48 @@ pub(crate) fn sidenav(groups: &'static [DocGroup], active: &str, section: Signal
                 column(items).cross_axis_alignment(CrossAxisAlignment::Stretch).main_axis_size(MainAxisSize::Min),
             ),
         ))
+}
+
+/// The section list as flat drawer rows (compact layout) — headers + tappable items
+/// that set the section AND close the mobile drawer. Shared by the Learn hub.
+pub(crate) fn drawer_sections(
+    groups: &'static [DocGroup],
+    active: &str,
+    section: Signal<String>,
+) -> Vec<AnyWidget> {
+    let c = theme().colors;
+    let mut v: Vec<AnyWidget> = Vec::new();
+    for (gi, group) in groups.iter().enumerate() {
+        if gi > 0 {
+            v.push(gap_h(12.0).into_widget());
+        }
+        v.push(
+            padding(
+                EdgeInsets::symmetric(10.0, 4.0),
+                text(group.label.to_string()).size(11.0).weight(700.0).color(c.muted_foreground),
+            )
+            .into_widget(),
+        );
+        for (id, label) in group.items {
+            let sel = active == *id;
+            let fg = if sel { brand::BROWN } else { c.foreground };
+            let id = *id;
+            v.push(
+                pressable(
+                    container().padding(EdgeInsets::symmetric(10.0, 9.0)).child(
+                        text(label.to_string()).size(15.0).weight(if sel { 600.0 } else { 500.0 }).color(fg),
+                    ),
+                )
+                .radius(8.0)
+                .on_tap(move || {
+                    section.set(id.to_string());
+                    crate::state::close_menu();
+                })
+                .into_widget(),
+            );
+        }
+    }
+    v
 }
 
 // ---------------------------------------------------------------------------
@@ -529,24 +571,34 @@ pub fn docs() -> Element {
         id => page(id),
     };
 
-    let content_pane = expanded(scroll_view(
+    let compact = is_compact();
+    let content_scroll = scroll_view(
         container()
-            .padding(EdgeInsets::symmetric(40.0, 34.0))
+            .padding(EdgeInsets::symmetric(if compact { 20.0 } else { 40.0 }, if compact { 24.0 } else { 34.0 }))
             .child(container().constraints(BoxConstraints::loose(Size::new(820.0, f64::INFINITY))).child(content)),
-    ));
+    );
+
+    // Compact: no inline sidebar (it moves into the drawer) — content is full width.
+    let main: AnyWidget = if compact {
+        content_scroll.into_widget()
+    } else {
+        row(children![sidenav(DOCS, &active, section), expanded(content_scroll)])
+            .cross_axis_alignment(CrossAxisAlignment::Stretch)
+            .into_widget()
+    };
+    let extra = if compact { drawer_sections(DOCS, &active, section) } else { Vec::new() };
 
     container()
         .color(theme().colors.background)
         .child(
-            column(children![
-                crate::site_nav::top_nav(),
-                expanded(
-                    row(children![sidenav(DOCS, &active, section), content_pane])
-                        .cross_axis_alignment(CrossAxisAlignment::Stretch),
-                ),
+            stack(children![
+                column(children![crate::site_nav::top_nav(), expanded(main)])
+                    .cross_axis_alignment(CrossAxisAlignment::Stretch)
+                    .main_axis_size(MainAxisSize::Max),
+                crate::site_nav::mobile_menu(extra),
             ])
-            .cross_axis_alignment(CrossAxisAlignment::Stretch)
-            .main_axis_size(MainAxisSize::Max),
+            .fit(StackFit::Expand)
+            .alignment(Alignment::TOP_LEFT),
         )
         .into_widget()
 }

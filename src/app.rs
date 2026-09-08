@@ -8,7 +8,7 @@
 use pebbles::prelude::*;
 
 use crate::screens;
-use crate::state::{DOCS, LANDING, LEARN, NAV, group_of, navigate, route, to_components};
+use crate::state::{DOCS, LANDING, LEARN, NAV, SHOWCASE, group_of, navigate, route, to_components};
 
 /// A small uppercase section header row for the sidebar.
 fn nav_section(label: &str) -> impl IntoWidget {
@@ -69,6 +69,7 @@ pub fn app() -> AnyWidget {
         LANDING => return screens::landing::landing().into_widget(),
         LEARN => return screens::learn::learn().into_widget(),
         DOCS => return screens::docs::docs().into_widget(),
+        SHOWCASE => return screens::showcase::showcase().into_widget(),
         _ => {}
     }
 

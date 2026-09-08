@@ -5,7 +5,8 @@
 
 use pebbles::prelude::*;
 
-use crate::screens::docs::{DocGroup, code, h2, p, prose, sidenav};
+use crate::screens::docs::{DocGroup, code, drawer_sections, h2, p, prose, sidenav};
+use crate::ui::is_compact;
 
 /// The lesson path. Each entry is `(id, title)`; groups are chapters.
 const LEARN: &[DocGroup] = &[
@@ -278,26 +279,35 @@ pub fn learn() -> Element {
     let section = crate::state::learn_section();
     let active = section.get();
 
-    let content_pane = expanded(scroll_view(
-        container().padding(EdgeInsets::symmetric(40.0, 34.0)).child(
-            container()
-                .constraints(BoxConstraints::loose(Size::new(760.0, f64::INFINITY)))
-                .child(lesson(&active)),
-        ),
-    ));
+    let compact = is_compact();
+    let content_scroll = scroll_view(
+        container()
+            .padding(EdgeInsets::symmetric(if compact { 20.0 } else { 40.0 }, if compact { 24.0 } else { 34.0 }))
+            .child(
+                container().constraints(BoxConstraints::loose(Size::new(760.0, f64::INFINITY))).child(lesson(&active)),
+            ),
+    );
+
+    let main: AnyWidget = if compact {
+        content_scroll.into_widget()
+    } else {
+        row(children![sidenav(LEARN, &active, section), expanded(content_scroll)])
+            .cross_axis_alignment(CrossAxisAlignment::Stretch)
+            .into_widget()
+    };
+    let extra = if compact { drawer_sections(LEARN, &active, section) } else { Vec::new() };
 
     container()
         .color(theme().colors.background)
         .child(
-            column(children![
-                crate::site_nav::top_nav(),
-                expanded(
-                    row(children![sidenav(LEARN, &active, section), content_pane])
-                        .cross_axis_alignment(CrossAxisAlignment::Stretch),
-                ),
+            stack(children![
+                column(children![crate::site_nav::top_nav(), expanded(main)])
+                    .cross_axis_alignment(CrossAxisAlignment::Stretch)
+                    .main_axis_size(MainAxisSize::Max),
+                crate::site_nav::mobile_menu(extra),
             ])
-            .cross_axis_alignment(CrossAxisAlignment::Stretch)
-            .main_axis_size(MainAxisSize::Max),
+            .fit(StackFit::Expand)
+            .alignment(Alignment::TOP_LEFT),
         )
         .into_widget()
 }
