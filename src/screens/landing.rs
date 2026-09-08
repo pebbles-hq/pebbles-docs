@@ -69,72 +69,6 @@ fn chip(ic: IconData, label: &str) -> impl IntoWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Top navigation bar
-// ---------------------------------------------------------------------------
-
-fn nav_link(label: &str, on: impl Fn() + 'static) -> impl IntoWidget {
-    let c = theme().colors;
-    pressable(
-        container().padding(EdgeInsets::symmetric(10.0, 6.0)).child(
-            text(label.to_string())
-                .size(13.5)
-                .weight(500.0)
-                .color(c.muted_foreground),
-        ),
-    )
-    .radius(8.0)
-    .on_tap(on)
-}
-
-fn nav_bar() -> impl IntoWidget {
-    let c = theme().colors;
-    let dark = theme().dark;
-    let theme_toggle =
-        icon_button(if dark { lucide::SUN } else { lucide::MOON }).on_pressed(toggle_theme);
-
-    band(
-        None,
-        16.0,
-        row(children![
-            row(children![
-                container()
-                    .decoration(
-                        BoxDecoration::new()
-                            .gradient(brand_gradient())
-                            .radius(BorderRadius::all(9.0)),
-                    )
-                    .padding(EdgeInsets::all(6.0))
-                    .child(icon(lucide::GEM).size(18.0).color(palette::WHITE)),
-                gap_w(10.0),
-                text("Pebbles").size(19.0).bold().color(c.foreground),
-            ])
-            .main_axis_size(MainAxisSize::Min)
-            .cross_axis_alignment(CrossAxisAlignment::Center),
-            spacer(),
-            row(children![
-                nav_link("Components", to_docs),
-                gap_w(2.0),
-                nav_link("Docs", to_docs),
-                gap_w(2.0),
-                nav_link("GitHub", || eprintln!(
-                    "open https://github.com/pebbles-hq/pebbles"
-                )),
-                gap_w(12.0),
-                theme_toggle,
-                gap_w(6.0),
-                button("Get started")
-                    .size(ButtonSize::Sm)
-                    .trailing(lucide::ARROW_RIGHT)
-                    .on_pressed(to_docs),
-            ])
-            .main_axis_size(MainAxisSize::Min)
-            .cross_axis_alignment(CrossAxisAlignment::Center),
-        ])
-        .cross_axis_alignment(CrossAxisAlignment::Center),
-    )
-}
-
-// ---------------------------------------------------------------------------
 // Hero
 // ---------------------------------------------------------------------------
 
@@ -533,7 +467,7 @@ fn footer() -> impl IntoWidget {
 pub fn landing() -> Element {
     scroll_view(
         column(children![
-            nav_bar(),
+            crate::site_nav::top_nav(),
             hero(),
             features(),
             code_section(),

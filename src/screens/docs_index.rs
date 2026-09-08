@@ -8,7 +8,7 @@
 
 use pebbles::prelude::*;
 
-use crate::state::{NAV, navigate, to_landing};
+use crate::state::{NAV, navigate};
 use crate::ui::{brand, gap_h, gap_w};
 
 /// Props for the reactive grid child: the shared search query.
@@ -151,56 +151,19 @@ fn render_grid(p: &GridProps) -> Column {
         .main_axis_size(MainAxisSize::Min)
 }
 
-/// The docs index page: a top bar with a search box + a scrolling, filtered grid.
+/// The docs index page: the shared top nav, then a scrolling body whose content is
+/// a title, an in-content search box, and the live-filtered component grid.
 pub fn docs_index() -> Element {
     let c = theme().colors;
-    let dark = theme().dark;
     let query = create_signal(String::new());
 
-    let brand_mark = pressable(
-        row(children![
-            icon(lucide::GEM).size(18.0).color(brand::INDIGO),
-            gap_w(9.0),
-            text("Pebbles").size(17.0).bold().color(c.foreground),
-        ])
-        .main_axis_size(MainAxisSize::Min)
-        .cross_axis_alignment(CrossAxisAlignment::Center),
-    )
-    .radius(8.0)
-    .on_tap(to_landing);
-
+    // The search lives IN the content (not the nav) — a wide, prominent field the
+    // grid filters against as you type.
     let search = text_field()
         .leading(lucide::SEARCH)
         .placeholder("Search components…")
-        .width(460.0)
+        .width(680.0)
         .bind(query);
-
-    let theme_toggle =
-        icon_button(if dark { lucide::SUN } else { lucide::MOON }).on_pressed(toggle_theme);
-
-    let top_bar = container()
-        .decoration(
-            BoxDecoration::new()
-                .color(c.background)
-                .border(Border::new(c.border, 1.0)),
-        )
-        .padding(EdgeInsets::symmetric(24.0, 14.0))
-        .child(
-            row(children![
-                brand_mark,
-                spacer(),
-                search,
-                spacer(),
-                theme_toggle,
-                gap_w(8.0),
-                button("Home")
-                    .variant(ButtonVariant::Ghost)
-                    .size(ButtonSize::Sm)
-                    .leading(lucide::HOUSE)
-                    .on_pressed(to_landing),
-            ])
-            .cross_axis_alignment(CrossAxisAlignment::Center),
-        );
 
     let body = scroll_view(
         container().padding(EdgeInsets::symmetric(32.0, 30.0)).child(
@@ -211,6 +174,8 @@ pub fn docs_index() -> Element {
                     .size(15.0)
                     .line_height(1.5)
                     .color(c.muted_foreground),
+                gap_h(20.0),
+                search,
                 gap_h(30.0),
                 component_props(render_grid, GridProps { query }),
             ])
@@ -219,7 +184,7 @@ pub fn docs_index() -> Element {
         ),
     );
 
-    column(children![top_bar, expanded(body)])
+    column(children![crate::site_nav::top_nav(), expanded(body)])
         .cross_axis_alignment(CrossAxisAlignment::Stretch)
         .main_axis_size(MainAxisSize::Max)
         .into_widget()

@@ -5,6 +5,7 @@
 mod app;
 mod capture;
 mod screens;
+mod site_nav;
 mod state;
 mod styles;
 mod ui;

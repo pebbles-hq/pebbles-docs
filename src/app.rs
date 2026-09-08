@@ -8,7 +8,7 @@
 use pebbles::prelude::*;
 
 use crate::screens;
-use crate::state::{DOCS, LANDING, NAV, label_for, navigate, route, to_docs, to_landing};
+use crate::state::{DOCS, LANDING, NAV, group_of, navigate, route, to_docs};
 
 /// A small uppercase section header row for the sidebar.
 fn nav_section(label: &str) -> impl IntoWidget {
@@ -74,21 +74,11 @@ pub fn app() -> AnyWidget {
     let c = theme().colors;
 
     // ----- side navigation -----
-    // The brand returns to the landing page; the row under it jumps back to the
-    // searchable component index.
-    let brand = pressable(padding(
-        EdgeInsets::symmetric(6.0, 10.0),
-        row(children![
-            icon(lucide::GEM).size(20.0).color(c.primary),
-            gap_w(8.0),
-            text("Pebbles").size(17.0).bold().color(c.foreground),
-        ])
-        .main_axis_size(MainAxisSize::Min),
-    ))
-    .radius(8.0)
-    .on_tap(to_landing);
+    // On a widget screen the sidebar is SCOPED to the active widget's own category —
+    // it lists that category's sibling components only, not the whole catalog. The
+    // header's back row returns to the full searchable index.
     let all_components = pressable(padding(
-        EdgeInsets::symmetric(6.0, 8.0),
+        EdgeInsets::symmetric(6.0, 10.0),
         row(children![
             icon(lucide::ARROW_LEFT).size(15.0).color(c.muted_foreground),
             gap_w(8.0),
@@ -100,10 +90,9 @@ pub fn app() -> AnyWidget {
     .on_tap(to_docs);
     let mut side = side_nav()
         .width(232.0)
-        .header(brand)
+        .header(all_components)
         .footer(padding(EdgeInsets::all(6.0), muted("v0.0.1 · Solid-style on Vello")));
-    side = side.item(all_components);
-    for group in NAV {
+    if let Some(group) = group_of(&current) {
         side = side.item(nav_section(group.label));
         for (r, ic, label) in group.routes {
             let route_id = *r;
@@ -254,16 +243,7 @@ pub fn app() -> AnyWidget {
         .route("images", || component(screens::images::images))
         .fallback(|| component(screens::overview::overview));
 
-    // A live light/dark toggle — flips the global theme signal; every component that
-    // read `theme()` (i.e. the whole tree) re-renders. Icon shows the target mode.
-    let dark = theme().dark;
-    let theme_toggle =
-        icon_button(if dark { lucide::SUN } else { lucide::MOON }).on_pressed(|| toggle_theme());
-
-    let top = top_panel(label_for(&current))
-        .leading(icon(IconKind::Menu).size(18.0).color(c.muted_foreground))
-        .action(theme_toggle)
-        .action(badge("v0.0.1").variant(BadgeVariant::Secondary));
-
-    scaffold(body).top(top).side(side).into_widget()
+    // The SAME top nav the landing page and index use (brand, links, theme toggle)
+    // sits above the scoped sidebar + routed content — one bar across every surface.
+    scaffold(body).top(crate::site_nav::top_nav()).side(side).into_widget()
 }

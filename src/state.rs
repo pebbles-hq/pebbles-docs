@@ -88,6 +88,12 @@ pub fn to_docs() {
 /// A single sidebar entry: (route id, icon, label).
 pub type Route = (&'static str, IconData, &'static str);
 
+/// The category group a widget `route` belongs to — the sidebar on a widget screen
+/// shows ONLY this group's items (its sibling components), not the whole catalog.
+pub fn group_of(route: &str) -> Option<&'static NavGroup> {
+    NAV.iter().find(|g| g.routes.iter().any(|(r, _, _)| *r == route))
+}
+
 /// A labelled group of routes — the sidebar renders one section per group so
 /// components of different categories are never jumbled together.
 pub struct NavGroup {
@@ -349,11 +355,3 @@ pub const NAV: &[NavGroup] = &[
         ],
     },
 ];
-
-pub fn label_for(route: &str) -> &'static str {
-    NAV.iter()
-        .flat_map(|g| g.routes.iter())
-        .find(|(r, _, _)| *r == route)
-        .map(|(_, _, l)| *l)
-        .unwrap_or("Pebbles")
-}
