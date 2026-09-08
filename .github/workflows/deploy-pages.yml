@@ -1,0 +1,71 @@
+name: Deploy web to GitHub Pages
+
+# Builds the landing/gallery to WebAssembly with Trunk and publishes the static
+# bundle to the org Pages repo (https://github.com/pebbles-hq/pebbles-hq.github.io),
+# which serves it at https://pebbles-hq.github.io/.
+#
+# ── One-time setup (repo maintainer) ──────────────────────────────────────────
+# Because Pages lives in a DIFFERENT repo, the default GITHUB_TOKEN can't push
+# there. Create a token that can, and store it here as a secret:
+#   1. Make a fine-grained PAT (github.com → Settings → Developer settings →
+#      Fine-grained tokens) scoped to `pebbles-hq/pebbles-hq.github.io` with
+#      Repository permissions → Contents: Read and write.
+#   2. In THIS repo: Settings → Secrets and variables → Actions → New repository
+#      secret, named `PAGES_DEPLOY_TOKEN`, value = that PAT.
+#   3. On `pebbles-hq.github.io`: Settings → Pages → Source = "Deploy from a
+#      branch", Branch = `main` / `(root)`. (First run creates that branch.)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two deploys race; the newest push wins.
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    # Surface the secret as an env var so we can gate the deploy on its presence
+    # (secrets can't be read directly in `if:`). Until it's set, the build still
+    # runs green and the deploy step is skipped.
+    env:
+      PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust (stable + wasm target)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo + build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Trunk
+        uses: jetli/trunk-action@v0.5.0
+        with:
+          version: latest
+
+      # Trunk drives cargo (wasm32) + wasm-bindgen, and wasm-opt on --release.
+      # public-url `/` because the org site is served from the domain root.
+      - name: Build web bundle (release)
+        run: trunk build --release ./index.html --dist ./dist --public-url /
+
+      - name: Deploy to pebbles-hq.github.io
+        if: ${{ env.PAGES_DEPLOY_TOKEN != '' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ env.PAGES_DEPLOY_TOKEN }}
+          external_repository: pebbles-hq/pebbles-hq.github.io
+          publish_branch: main
+          publish_dir: ./dist
+          # A user/org Pages site serves the branch verbatim — keep .nojekyll
+          # (peaceiris adds it) so the `_bg.wasm`/underscored files aren't dropped.
+          force_orphan: true
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          commit_message: "deploy: ${{ github.sha }}"
