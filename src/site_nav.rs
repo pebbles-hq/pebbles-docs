@@ -99,9 +99,9 @@ fn nav(hero: bool) -> AnyWidget {
     let compact = is_compact();
     // The hero bar is bigger and chrome-less; the standard bar is compact with a rule.
     // `link_px` scales the links/button up with the hero logo so the right side keeps
-    // pace with the 68px mark instead of reading as tiny.
+    // pace with the bigger mark instead of reading as tiny.
     let (logo_px, text_px, vpad, link_px) =
-        if hero { (68.0, 30.0, 22.0, 15.5) } else { (34.0, 18.0, 13.0, 13.5) };
+        if hero { (46.0, 24.0, 20.0, 15.0) } else { (34.0, 18.0, 13.0, 13.5) };
 
     let bar_inner: AnyWidget = if compact {
         // Menu button (left of the logo), brand, then just the theme toggle. The links
