@@ -8,7 +8,7 @@ use pebbles::prelude::*;
 use crate::state::{
     close_menu, menu_open, to_components, to_docs, to_landing, to_learn, to_showcase, toggle_menu,
 };
-use crate::ui::{gap_w, is_compact, logo_mark};
+use crate::ui::{brand, gap_w, is_compact, logo_mark};
 
 /// The nav destinations, shared by the wide bar and the compact drawer so they never
 /// drift apart. `(label, action)`.
@@ -26,15 +26,21 @@ fn open_github() {
     eprintln!("open https://github.com/pebbles-hq/pebbles");
 }
 
-/// A muted horizontal text link (wide bar).
-fn nav_link(label: &'static str, on: fn()) -> impl IntoWidget {
+/// A horizontal text link (wide bar). Muted at rest; on hover the label brightens
+/// to the full foreground and a warm brand-tinted pill fades in behind it, so the
+/// pointer target reads clearly instead of sitting flat.
+fn nav_link(label: &'static str, on: fn(), px: f32) -> impl IntoWidget {
     let c = theme().colors;
+    let hovered = create_signal(false);
+    let color = if hovered.get() { c.foreground } else { c.muted_foreground };
     pressable(
         container()
-            .padding(EdgeInsets::symmetric(10.0, 6.0))
-            .child(text(label.to_string()).size(13.5).weight(500.0).color(c.muted_foreground)),
+            .padding(EdgeInsets::symmetric(f64::from(px) * 0.85, f64::from(px) * 0.5))
+            .child(text(label.to_string()).size(px).weight(500.0).color(color)),
     )
-    .radius(8.0)
+    .radius(9.0)
+    .hover_tint(brand::BROWN)
+    .on_hover(move |h| hovered.set(h))
     .on_tap(on)
 }
 
@@ -75,7 +81,10 @@ fn nav(hero: bool) -> AnyWidget {
     let c = theme().colors;
     let compact = is_compact();
     // The hero bar is bigger and chrome-less; the standard bar is compact with a rule.
-    let (logo_px, text_px, vpad) = if hero { (68.0, 30.0, 26.0) } else { (34.0, 18.0, 13.0) };
+    // `link_px` scales the links/button up with the hero logo so the right side keeps
+    // pace with the 68px mark instead of reading as tiny.
+    let (logo_px, text_px, vpad, link_px) =
+        if hero { (68.0, 30.0, 22.0, 15.5) } else { (34.0, 18.0, 13.0, 13.5) };
 
     let bar_inner: AnyWidget = if compact {
         // Menu button (left of the logo), brand, then just the theme toggle. The links
@@ -92,14 +101,18 @@ fn nav(hero: bool) -> AnyWidget {
     } else {
         let mut links: Vec<AnyWidget> = Vec::new();
         for (label, on) in targets() {
-            links.push(nav_link(label, on).into_widget());
-            links.push(gap_w(2.0).into_widget());
+            links.push(nav_link(label, on, link_px).into_widget());
+            links.push(gap_w(if hero { 4.0 } else { 2.0 }).into_widget());
         }
-        links.push(gap_w(10.0).into_widget());
+        links.push(gap_w(if hero { 14.0 } else { 10.0 }).into_widget());
         links.push(theme_toggle().into_widget());
-        links.push(gap_w(6.0).into_widget());
+        links.push(gap_w(if hero { 10.0 } else { 6.0 }).into_widget());
         links.push(
-            button("Get started").size(ButtonSize::Sm).trailing(lucide::ARROW_RIGHT).on_pressed(to_learn).into_widget(),
+            button("Get started")
+                .size(if hero { ButtonSize::Md } else { ButtonSize::Sm })
+                .trailing(lucide::ARROW_RIGHT)
+                .on_pressed(to_learn)
+                .into_widget(),
         );
         row(children![
             brand_mark(logo_px, text_px),
