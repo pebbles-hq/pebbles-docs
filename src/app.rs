@@ -1,6 +1,6 @@
 //! The root app component. Three top-level surfaces, chosen by the global route
 //! signal: the marketing **landing page** ([`screens::landing`]) and the searchable
-//! **component index** ([`screens::docs_index`]) are full-bleed pages with their own
+//! **component index** ([`screens::docs`]) are full-bleed pages with their own
 //! chrome; every other route is a **widget screen** shown in a `Scaffold` with a
 //! `SideNav` + `RouteView` body (the docs reading layout). The route is a global
 //! signal read here and written by the nav — no prop-drilling.
@@ -67,7 +67,7 @@ pub fn app() -> AnyWidget {
     // everything else is a widget screen in the sidenav + content shell below.
     match current.as_str() {
         LANDING => return screens::landing::landing().into_widget(),
-        DOCS => return screens::docs_index::docs_index().into_widget(),
+        DOCS => return screens::docs::docs().into_widget(),
         _ => {}
     }
 

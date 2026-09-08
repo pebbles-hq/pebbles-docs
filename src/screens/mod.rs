@@ -25,7 +25,7 @@ pub mod data_table;
 pub mod date_picker;
 pub mod dialog;
 pub mod dnd;
-pub mod docs_index;
+pub mod docs;
 pub mod empty;
 pub mod file_explorer;
 pub mod fonts;
