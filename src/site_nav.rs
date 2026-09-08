@@ -38,14 +38,15 @@ fn nav_link(label: &'static str, on: fn()) -> impl IntoWidget {
     .on_tap(on)
 }
 
-/// The brand mark (mascot logo + wordmark) — clicking it returns to the landing page.
-fn brand_mark() -> impl IntoWidget {
+/// The brand mark (mascot logo + wordmark), sized for the bar — clicking it returns to
+/// the landing page.
+fn brand_mark(logo_px: f64, text_px: f32) -> impl IntoWidget {
     let c = theme().colors;
     pressable(
         row(children![
-            logo_mark(34.0),
-            gap_w(9.0),
-            text("Pebbles").size(18.0).bold().color(c.foreground),
+            logo_mark(logo_px),
+            gap_w(if logo_px >= 40.0 { 12.0 } else { 9.0 }),
+            text("Pebbles").size(text_px).bold().color(c.foreground),
         ])
         .main_axis_size(MainAxisSize::Min)
         .cross_axis_alignment(CrossAxisAlignment::Center),
@@ -58,10 +59,23 @@ fn theme_toggle() -> impl IntoWidget {
     icon_button(if theme().dark { lucide::SUN } else { lucide::MOON }).on_pressed(toggle_theme)
 }
 
-/// The shared top navigation bar with a hairline rule beneath it.
-pub fn top_nav() -> impl IntoWidget {
+/// The standard top bar (docs / learn / showcase): background from the page, a hairline
+/// rule beneath it.
+pub fn top_nav() -> AnyWidget {
+    nav(false)
+}
+
+/// The landing hero bar: taller, a bigger logo, **transparent** (no background fill, no
+/// hairline) so it blends into the hero and scrolls with the content.
+pub fn hero_nav() -> AnyWidget {
+    nav(true)
+}
+
+fn nav(hero: bool) -> AnyWidget {
     let c = theme().colors;
     let compact = is_compact();
+    // The hero bar is bigger and chrome-less; the standard bar is compact with a rule.
+    let (logo_px, text_px, vpad) = if hero { (48.0, 22.0, 22.0) } else { (34.0, 18.0, 13.0) };
 
     let bar_inner: AnyWidget = if compact {
         // Menu button (left of the logo), brand, then just the theme toggle. The links
@@ -69,7 +83,7 @@ pub fn top_nav() -> impl IntoWidget {
         row(children![
             icon_button(lucide::MENU).on_pressed(toggle_menu),
             gap_w(4.0),
-            brand_mark(),
+            brand_mark(logo_px, text_px),
             spacer(),
             theme_toggle(),
         ])
@@ -88,7 +102,7 @@ pub fn top_nav() -> impl IntoWidget {
             button("Get started").size(ButtonSize::Sm).trailing(lucide::ARROW_RIGHT).on_pressed(to_learn).into_widget(),
         );
         row(children![
-            brand_mark(),
+            brand_mark(logo_px, text_px),
             spacer(),
             row(links).main_axis_size(MainAxisSize::Min).cross_axis_alignment(CrossAxisAlignment::Center),
         ])
@@ -96,11 +110,17 @@ pub fn top_nav() -> impl IntoWidget {
         .into_widget()
     };
 
-    let bar = container().padding(EdgeInsets::symmetric(if compact { 16.0 } else { 26.0 }, 13.0)).child(bar_inner);
+    let bar = container().padding(EdgeInsets::symmetric(if compact { 16.0 } else { 26.0 }, vpad)).child(bar_inner);
 
-    column(children![bar, container().height(1.0).decoration(BoxDecoration::new().color(c.border))])
-        .cross_axis_alignment(CrossAxisAlignment::Stretch)
-        .main_axis_size(MainAxisSize::Min)
+    if hero {
+        // Transparent, no rule — the caller places it on the hero background.
+        bar.into_widget()
+    } else {
+        column(children![bar, container().height(1.0).decoration(BoxDecoration::new().color(c.border))])
+            .cross_axis_alignment(CrossAxisAlignment::Stretch)
+            .main_axis_size(MainAxisSize::Min)
+            .into_widget()
+    }
 }
 
 /// A tappable row in the mobile drawer.

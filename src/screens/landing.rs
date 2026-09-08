@@ -139,25 +139,36 @@ fn hero() -> impl IntoWidget {
             .into_widget()
     };
 
-    band(
-        Some(hero_bg),
-        if compact { 40.0 } else { 64.0 },
-        column(children![
-            center(gradient_pill("v0.0.1 · pure Rust · GPU-native")),
-            gap_h(26.0),
-            center(headline),
-            gap_h(22.0),
-            center(sub),
-            gap_h(30.0),
-            center(ctas),
-            gap_h(22.0),
-            center(trust),
-            gap_h(56.0),
-            center(showcase),
-        ])
-        .cross_axis_alignment(CrossAxisAlignment::Stretch)
-        .main_axis_size(MainAxisSize::Min),
-    )
+    // The hero owns the top nav so both share one background — no separate white strip.
+    // The bar is transparent and scrolls with everything else.
+    container()
+        .decoration(BoxDecoration::new().color(hero_bg))
+        .child(
+            column(children![
+                crate::site_nav::hero_nav(),
+                band(
+                    None,
+                    if compact { 24.0 } else { 40.0 },
+                    column(children![
+                        center(gradient_pill("v0.0.1 · pure Rust · GPU-native")),
+                        gap_h(26.0),
+                        center(headline),
+                        gap_h(22.0),
+                        center(sub),
+                        gap_h(30.0),
+                        center(ctas),
+                        gap_h(22.0),
+                        center(trust),
+                        gap_h(56.0),
+                        center(showcase),
+                    ])
+                    .cross_axis_alignment(CrossAxisAlignment::Stretch)
+                    .main_axis_size(MainAxisSize::Min),
+                ),
+            ])
+            .cross_axis_alignment(CrossAxisAlignment::Stretch)
+            .main_axis_size(MainAxisSize::Min),
+        )
 }
 
 // ---------------------------------------------------------------------------
@@ -421,7 +432,6 @@ pub fn landing() -> Element {
         .child(stack(children![
             scroll_view(
                 column(children![
-                    crate::site_nav::top_nav(),
                     hero(),
                     features(),
                     code_section(),
