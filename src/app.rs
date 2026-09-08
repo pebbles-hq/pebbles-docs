@@ -93,7 +93,7 @@ pub fn app() -> AnyWidget {
     let mut side = side_nav()
         .width(232.0)
         .header(all_components)
-        .footer(padding(EdgeInsets::all(6.0), muted("v0.0.1 · Solid-style on Vello")));
+        .footer(padding(EdgeInsets::all(6.0), muted("v0.0.1 · built on Vello")));
     if let Some(group) = group_of(&current) {
         side = side.item(nav_section(group.label));
         for (r, ic, label) in group.routes {

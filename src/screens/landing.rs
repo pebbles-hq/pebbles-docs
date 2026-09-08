@@ -93,8 +93,9 @@ fn hero() -> impl IntoWidget {
 
     let sub = container().constraints(BoxConstraints::loose(Size::new(660.0, f64::INFINITY))).child(
         text(
-            "Pebbles is a Flutter-style, GPU-accelerated GUI framework for Rust. \
-             Reactive signals, 60+ shadcn-styled widgets, one codebase for desktop, web, and mobile.",
+            "Pebbles brings good ideas from across software to Rust — a widget model in the \
+             spirit of Flutter, reactivity like SolidJS, styling like Tailwind, GPU-rendered \
+             with Vello. One codebase for desktop, web, and mobile.",
         )
         .size(17.5)
         .line_height(1.55)
@@ -220,8 +221,8 @@ fn features() -> impl IntoWidget {
             gap_h(36.0),
             center(
                 wrap(children![
-                    feature_card(lucide::ZAP, brand::BROWN, "SolidJS-style reactivity", "Fine-grained signals drive the tree. One create_signal primitive for local and global state — no prop-drilling, no VDOM diffing."),
-                    feature_card(lucide::LAYOUT_GRID, brand::TAN, "60+ styled components", "Buttons, inputs, dialogs, sheets, data tables, command palette — a full shadcn-flavored catalog, themeable light and dark."),
+                    feature_card(lucide::ZAP, brand::BROWN, "Fine-grained reactivity", "Signals in the spirit of SolidJS drive the tree. One create_signal primitive for local and global state — no prop-drilling, no VDOM diffing."),
+                    feature_card(lucide::LAYOUT_GRID, brand::TAN, "60+ styled components", "Buttons, inputs, dialogs, sheets, data tables, command palette — a full themed catalog, light and dark, with utility styling in the spirit of Tailwind."),
                     feature_card(lucide::CPU, brand::TEAL, "GPU rendering via Vello", "Every frame is rasterized on the GPU. Sub-pixel text, gradients, blurs and clips — smooth at any window size."),
                     feature_card(lucide::MONITOR_SMARTPHONE, palette::GREEN, "One codebase, everywhere", "The same widget tree runs on desktop (winit + wgpu), the web (WebGPU/wasm), and mobile shells."),
                     feature_card(lucide::WAND, brand::NOSE, "Motion built in", "Implicit and explicit animation widgets — animated containers, transitions, hero flights — with springs and curves."),
@@ -281,7 +282,7 @@ fn code_section() -> impl IntoWidget {
             column(children![
                 gradient_pill("Developer experience"),
                 gap_h(18.0),
-                text("If you know Flutter or Solid, you already know Pebbles")
+                text("Familiar ideas, brought to Rust")
                     .size(28.0)
                     .bold()
                     .color(c.foreground),

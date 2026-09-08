@@ -363,11 +363,12 @@ fn page(id: &str) -> AnyWidget {
     match id {
         "introduction" => prose(
             "Introduction",
-            "Pebbles is a Flutter-style, GPU-accelerated GUI framework for Rust — declarative widgets, fine-grained reactivity, and one codebase for desktop, web, and mobile.",
+            "Pebbles is a GUI framework for Rust built from handpicked ideas — declarative widgets, fine-grained reactivity, and one codebase for desktop, web, and mobile.",
             vec![
+                p("Pebbles didn't set out to invent a new way to build UIs. It curates approaches that already got it right across different ecosystems and reimplements them natively in Rust: a widget model in the spirit of Flutter, reactivity in the spirit of SolidJS, styling in the spirit of Tailwind, and GPU rendering on Vello."),
                 p("You describe your UI as a tree of widgets returned from plain functions. State lives in signals; when a signal changes, only the parts of the tree that read it re-render. Every frame is rasterized on the GPU through Vello, so text, gradients, blurs, and clips stay crisp and smooth at any size."),
-                h2("Why Pebbles"),
-                p("If you know Flutter or SolidJS, you already know Pebbles: components are functions, state is a signal, and events are closures. There is no virtual DOM, no macro DSL to learn, and no garbage collector — just Rust and `cargo run`."),
+                h2("The model"),
+                p("Components are functions, state is a signal, and events are closures. There is no virtual DOM, no macro DSL to learn, and no garbage collector — just Rust and `cargo run`."),
                 h2("The loop"),
                 p("Build a widget tree, hand the root to `App`, and run it. The rest of these docs walk through the pieces: installing the toolchain, the reactivity model, and the widget + component catalog."),
             ],
@@ -497,7 +498,7 @@ fn page(id: &str) -> AnyWidget {
         ),
         "theming" => prose(
             "Theming",
-            "A shadcn-flavored theme with first-class light and dark modes.",
+            "A cohesive, utility-driven theme with first-class light and dark modes.",
             vec![
                 p("`theme()` returns the active theme; `theme().colors` gives semantic roles (background, foreground, card, primary, muted, border…). Set the theme once at startup and flip it live at any time — every component that read `theme()` re-renders."),
                 code("Theme::light().make_current();     // at startup\n\nicon_button(lucide::MOON).on_pressed(toggle_theme);  // flip live"),
@@ -556,7 +557,7 @@ pub fn docs() -> Element {
     let content: AnyWidget = match active.as_str() {
         "catalog" => catalog(
             "Components",
-            "The shadcn-flavored UI set — inputs, feedback, navigation, overlays. Pick one to open it live.",
+            "The themed UI set — inputs, feedback, navigation, overlays. Pick one to open it live.",
             query,
             false,
         ),

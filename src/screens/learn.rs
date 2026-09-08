@@ -178,7 +178,7 @@ fn lesson(id: &str) -> AnyWidget {
             "Where to Next",
             "You've built an app and learned the model. Here's where to go.",
             vec![
-                p("• Browse the Components tab for the full shadcn-flavored UI set, and Widgets for layout, motion, and painting primitives — each one is live and copy-paste ready."),
+                p("• Browse the Components tab for the full themed UI set, and Widgets for layout, motion, and painting primitives — each one is live and copy-paste ready."),
                 p("• Use the Docs tab as a reference when you need the details of a concept."),
                 p("• Read the source of this gallery: it's a real Pebbles app that exercises every widget."),
                 p("That's it — go build something."),
