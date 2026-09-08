@@ -111,13 +111,7 @@ fn render_grid(p: &GridProps) -> Column {
             .into_widget(),
         );
         items.push(gap_h(14.0).into_widget());
-        items.push(
-            wrap(cards)
-                .spacing(12.0)
-                .run_spacing(12.0)
-                .alignment(WrapAlignment::Center)
-                .into_widget(),
-        );
+        items.push(wrap(cards).spacing(12.0).run_spacing(12.0).into_widget());
         items.push(gap_h(30.0).into_widget());
     }
 
@@ -153,7 +147,7 @@ fn render_grid(p: &GridProps) -> Column {
     }
 
     column(items)
-        .cross_axis_alignment(CrossAxisAlignment::Center)
+        .cross_axis_alignment(CrossAxisAlignment::Start)
         .main_axis_size(MainAxisSize::Min)
 }
 
@@ -174,23 +168,24 @@ pub fn docs_index() -> Element {
     // Everything is centered in a bounded column — the page is NOT full-bleed; the
     // content sits in a max-width block centered on the page (title, search, and the
     // category grid all share the same centered axis).
+    // Only the WRAPPER is centered on the page — a max-width block. Inside it, the
+    // title, search, and category grid are all LEFT-aligned (cross Start).
     let body = scroll_view(
         container().padding(EdgeInsets::symmetric(32.0, 30.0)).child(center(
             container().constraints(BoxConstraints::loose(Size::new(980.0, f64::INFINITY))).child(
                 column(children![
-                    text("Components").size(30.0).bold().color(c.foreground).align(TextAlign::Center),
+                    text("Components").size(30.0).bold().color(c.foreground),
                     gap_h(6.0),
                     text("Every widget in the Pebbles catalog — live and themeable. Pick one to open it in the docs.")
                         .size(15.0)
                         .line_height(1.5)
-                        .color(c.muted_foreground)
-                        .align(TextAlign::Center),
+                        .color(c.muted_foreground),
                     gap_h(20.0),
                     search,
                     gap_h(30.0),
                     component_props(render_grid, GridProps { query }),
                 ])
-                .cross_axis_alignment(CrossAxisAlignment::Center)
+                .cross_axis_alignment(CrossAxisAlignment::Start)
                 .main_axis_size(MainAxisSize::Min),
             ),
         )),

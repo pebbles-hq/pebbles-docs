@@ -82,16 +82,8 @@ fn hero() -> impl IntoWidget {
     };
 
     let headline = column(children![
-        text("Beautiful native UIs,")
-            .size(52.0)
-            .bold()
-            .color(c.foreground)
-            .align(TextAlign::Center),
-        text("written in Rust.")
-            .size(52.0)
-            .bold()
-            .color(brand::INDIGO)
-            .align(TextAlign::Center),
+        text("Beautiful native UIs,").size(52.0).bold().color(c.foreground),
+        text("written in Rust.").size(52.0).bold().color(brand::INDIGO),
     ])
     .cross_axis_alignment(CrossAxisAlignment::Center)
     .main_axis_size(MainAxisSize::Min);
@@ -143,7 +135,7 @@ fn hero() -> impl IntoWidget {
         column(children![
             center(gradient_pill("v0.0.1 · pure Rust · GPU-native")),
             gap_h(26.0),
-            headline,
+            center(headline),
             gap_h(22.0),
             center(sub),
             gap_h(30.0),
