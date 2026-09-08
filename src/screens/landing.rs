@@ -457,18 +457,22 @@ fn footer() -> impl IntoWidget {
 // ---------------------------------------------------------------------------
 
 pub fn landing() -> Element {
-    scroll_view(
-        column(children![
-            crate::site_nav::top_nav(),
-            hero(),
-            features(),
-            code_section(),
-            cta(),
-            gap_h(10.0),
-            footer(),
-        ])
-        .cross_axis_alignment(CrossAxisAlignment::Stretch)
-        .main_axis_size(MainAxisSize::Min),
-    )
-    .into_widget()
+    // Paint the theme background behind everything so transparent sections (and any
+    // area the fixed window clear-color would show through) track light/dark on toggle.
+    container()
+        .color(theme().colors.background)
+        .child(scroll_view(
+            column(children![
+                crate::site_nav::top_nav(),
+                hero(),
+                features(),
+                code_section(),
+                cta(),
+                gap_h(10.0),
+                footer(),
+            ])
+            .cross_axis_alignment(CrossAxisAlignment::Stretch)
+            .main_axis_size(MainAxisSize::Min),
+        ))
+        .into_widget()
 }

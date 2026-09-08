@@ -246,5 +246,9 @@ pub fn app() -> AnyWidget {
 
     // The SAME top nav the landing page and index use (brand, links, theme toggle)
     // sits above the scoped sidebar + routed content — one bar across every surface.
-    scaffold(body).top(crate::site_nav::top_nav()).side(side).into_widget()
+    scaffold(body)
+        .top(crate::site_nav::top_nav())
+        .side(side)
+        .background(theme().colors.background)
+        .into_widget()
 }

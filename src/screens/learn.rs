@@ -286,14 +286,18 @@ pub fn learn() -> Element {
         ),
     ));
 
-    column(children![
-        crate::site_nav::top_nav(),
-        expanded(
-            row(children![sidenav(LEARN, &active, section), content_pane])
-                .cross_axis_alignment(CrossAxisAlignment::Stretch),
-        ),
-    ])
-    .cross_axis_alignment(CrossAxisAlignment::Stretch)
-    .main_axis_size(MainAxisSize::Max)
-    .into_widget()
+    container()
+        .color(theme().colors.background)
+        .child(
+            column(children![
+                crate::site_nav::top_nav(),
+                expanded(
+                    row(children![sidenav(LEARN, &active, section), content_pane])
+                        .cross_axis_alignment(CrossAxisAlignment::Stretch),
+                ),
+            ])
+            .cross_axis_alignment(CrossAxisAlignment::Stretch)
+            .main_axis_size(MainAxisSize::Max),
+        )
+        .into_widget()
 }
