@@ -26,11 +26,22 @@ fn open_github() {
     eprintln!("open https://github.com/pebbles-hq/pebbles");
 }
 
+/// Props for one nav link — carried into its own component so the hover signal
+/// lives in an isolated reactive scope (like the framework's own `pressable`),
+/// not the enclosing page's build. State in a plain helper would churn the whole
+/// page on every hover.
+struct NavLinkProps {
+    label: &'static str,
+    on: fn(),
+    px: f32,
+}
+
 /// A horizontal text link (wide bar). Muted at rest; on hover the label brightens
 /// to the full foreground and a warm brand-tinted pill fades in behind it, so the
 /// pointer target reads clearly instead of sitting flat.
-fn nav_link(label: &'static str, on: fn(), px: f32) -> impl IntoWidget {
+fn render_nav_link(p: &NavLinkProps) -> AnyWidget {
     let c = theme().colors;
+    let (label, on, px) = (p.label, p.on, p.px);
     let hovered = create_signal(false);
     let color = if hovered.get() { c.foreground } else { c.muted_foreground };
     pressable(
@@ -42,6 +53,12 @@ fn nav_link(label: &'static str, on: fn(), px: f32) -> impl IntoWidget {
     .hover_tint(brand::BROWN)
     .on_hover(move |h| hovered.set(h))
     .on_tap(on)
+    .into_widget()
+}
+
+/// Build one nav link as its own component instance.
+fn nav_link(label: &'static str, on: fn(), px: f32) -> impl IntoWidget {
+    component_props(render_nav_link, NavLinkProps { label, on, px })
 }
 
 /// The brand mark (mascot logo + wordmark), sized for the bar — clicking it returns to

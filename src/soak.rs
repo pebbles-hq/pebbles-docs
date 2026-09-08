@@ -10,7 +10,7 @@
 use pebbles::prelude::*;
 
 use crate::app;
-use crate::state::{NAV, navigate};
+use crate::state::{LANDING, NAV, navigate};
 
 const WINDOW: Size = Size::new(1180.0, 820.0);
 
@@ -132,4 +132,52 @@ fn navigation_soak_returns_to_baseline() {
 
     // No screen may leave the frame driver running once back on Overview.
     assert!(!pebbles::core::animation::active(), "animation driver never settled after the soak");
+}
+
+/// Hovering the hero nav links must NOT churn the landing page's reactive scope.
+/// Regression guard for the bug where per-link hover state lived in a plain helper
+/// (not a component), so every hover rebuilt the whole landing page and froze
+/// input/scroll. Each hover must settle within the bounded frame budget and leave
+/// every shared registry at its pre-hover baseline.
+#[test]
+fn hero_nav_hover_is_stable() {
+    Theme::light().make_current();
+    crate::state::init();
+    pebbles::widgets::overlay::init();
+    pebbles::core::focus::init();
+    dialog::init();
+    pebbles::core::animation::reset();
+    // Wide viewport so the hero renders the full link bar, not the compact menu.
+    pebbles::widgets::overlay::set_window_size(1180.0, 820.0);
+
+    let mut ui = Ui::new();
+    let mut env = pebbles::render::TextEnv::new();
+    ui.make_current();
+    ui.mount_root(View::new(theme().colors.background, component(app::app)).into_widget());
+    navigate(LANDING);
+    let mut now = 0.0_f64;
+    settle(&mut ui, &mut env, &mut now);
+
+    // The links sit in the top strip, right of center. Confirm at least one is
+    // hit-testable so the sweep below is actually exercising the wide bar.
+    let link_xs = [545.0, 615.0, 712.0, 828.0, 922.0];
+    let hit = link_xs.iter().any(|&x| ui.tap_target_at(Offset::new(x, 56.0)).is_some());
+    assert!(hit, "no hero nav link was hit-testable — bar layout / coordinates drifted");
+
+    let baseline = census(&ui);
+
+    // Sweep hover across each link and back off, many cycles. An unbounded rebuild
+    // loop would hang `rebuild_if_dirty` inside `settle` and never return.
+    for _ in 0..8 {
+        for &x in &link_xs {
+            let _ = ui.dispatch_hover(Offset::new(x, 56.0));
+            settle(&mut ui, &mut env, &mut now);
+        }
+        let _ = ui.dispatch_hover(Offset::new(1170.0, 780.0)); // off every link
+        settle(&mut ui, &mut env, &mut now);
+    }
+
+    let after = census(&ui);
+    assert_eq!(after, baseline, "hovering the hero nav links churned a shared registry (leak / rebuild storm)");
+    assert!(!pebbles::core::animation::active(), "hover left the frame driver running");
 }
