@@ -53,7 +53,11 @@ jobs:
       # Trunk drives cargo (wasm32) + wasm-bindgen, and wasm-opt on --release.
       # public-url `/` because the org site is served from the domain root.
       - name: Build web bundle (release)
-        run: trunk build --release ./index.html --dist ./dist --public-url /
+        # `--release` takes an optional value in Trunk 0.21, so it must NOT be
+        # immediately followed by the index path (Trunk would parse the path as the
+        # flag's value → "invalid value './index.html' for '--release'"). Put the
+        # positional index first, flags after.
+        run: trunk build ./index.html --release --dist ./dist --public-url /
 
       - name: Deploy to pebbles-hq.github.io
         if: ${{ env.PAGES_DEPLOY_TOKEN != '' }}
