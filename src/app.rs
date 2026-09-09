@@ -65,11 +65,16 @@ pub fn app() -> AnyWidget {
 
     // Top-level surfaces: landing + docs index are full-bleed pages of their own;
     // everything else is a widget screen in the sidenav + content shell below.
+    // Each MUST be wrapped in `component(..)` (like the widget screens below) so its
+    // signals live in their OWN reactive scope. Called inline (`landing()`), they'd
+    // share app()'s hook slots, and switching routes would alias one page's signal
+    // onto another's — e.g. the landing code editor's text bleeding into the docs
+    // catalog search box, filtering it to "No matches".
     match current.as_str() {
-        LANDING => return screens::landing::landing().into_widget(),
-        LEARN => return screens::learn::learn().into_widget(),
-        DOCS => return screens::docs::docs().into_widget(),
-        SHOWCASE => return screens::showcase::showcase().into_widget(),
+        LANDING => return component(screens::landing::landing).into_widget(),
+        LEARN => return component(screens::learn::learn).into_widget(),
+        DOCS => return component(screens::docs::docs).into_widget(),
+        SHOWCASE => return component(screens::showcase::showcase).into_widget(),
         _ => {}
     }
 
