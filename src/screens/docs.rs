@@ -325,9 +325,19 @@ pub(crate) fn p(s: &str) -> AnyWidget {
         .into_widget()
 }
 
-pub(crate) fn code(src: &str) -> AnyWidget {
+/// Props for one code block — carried into its own component so the editor's
+/// content `create_signal` lives in an ISOLATED reactive scope. If `code()` created
+/// the signal inline (a plain helper), it would land in the *caller's* component
+/// (the `docs()` page) and share hook slots with the catalog's `query` signal —
+/// switching sections then bleeds a code sample into the search box, filtering the
+/// whole catalog to "No matches". See [[pebbles-create-signal-needs-component-scope]].
+struct CodeProps {
+    src: String,
+}
+
+fn render_code(p: &CodeProps) -> AnyWidget {
     // Dogfood the pebbles-code-editor package: a read-only, syntax-highlighted block.
-    let sig = create_signal(src.to_string());
+    let sig = create_signal(p.src.clone());
     let ed_theme = if theme().dark { EditorTheme::dark() } else { EditorTheme::light() };
     column(children![
         code_editor(sig)
@@ -341,6 +351,10 @@ pub(crate) fn code(src: &str) -> AnyWidget {
     .cross_axis_alignment(CrossAxisAlignment::Stretch)
     .main_axis_size(MainAxisSize::Min)
     .into_widget()
+}
+
+pub(crate) fn code(src: &str) -> AnyWidget {
+    component_props(render_code, CodeProps { src: src.to_string() }).into_widget()
 }
 
 pub(crate) fn prose(title: &str, subtitle: &str, blocks: Vec<AnyWidget>) -> AnyWidget {
