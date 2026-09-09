@@ -61,15 +61,15 @@ fn pull_to_refresh() -> impl IntoWidget {
                 .threshold(64.0)
                 .on_refresh(move |done| {
                     refreshing.set(true);
-                    let done = done;
-                    let refreshing = refreshing;
-                    spawn(
-                        move || std::thread::sleep(std::time::Duration::from_millis(1200)),
-                        move |_| {
-                            refreshing.set(false);
-                            done.finish();
-                        },
-                    );
+                    // Simulate a 1.2s refresh. Do NOT use std::thread::sleep: on the
+                    // wasm build it lowers to `memory.atomic.wait` on non-shared memory,
+                    // which TRAPS and aborts the whole app on web (every page then looks
+                    // broken). A frame-loop timer behaves identically on native + web.
+                    const REFRESH_TIMER: u64 = u64::from_le_bytes(*b"pullref!");
+                    pebbles::core::animation::set_timeout(REFRESH_TIMER, 1.2, move || {
+                        refreshing.set(false);
+                        done.finish();
+                    });
                 })),
         )
 }
