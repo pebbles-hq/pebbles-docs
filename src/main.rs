@@ -17,7 +17,7 @@ use pebbles::prelude::*;
 
 #[pebbles::main]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Theme::light().make_current();
+    Theme::tailwind().make_current();
     state::init(); // create the global route signal before any component runs
     // GALLERY_CAPTURE=<dir>: render the two-window IPC demo headlessly to raw
     // RGBA frames (the pre-competition demo capture) instead of opening a window.

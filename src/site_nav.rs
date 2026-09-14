@@ -4,6 +4,7 @@
 //! ([`mobile_menu`]); each page stacks that drawer over its content.
 
 use pebbles::prelude::*;
+use pebbles::widgets::{DesignLanguage, design, set_design};
 
 use crate::state::{
     close_menu, menu_open, to_components, to_docs, to_landing, to_learn, to_showcase, toggle_menu,
@@ -82,6 +83,25 @@ fn theme_toggle() -> impl IntoWidget {
     icon_button(if theme().dark { lucide::SUN } else { lucide::MOON }).on_pressed(toggle_theme)
 }
 
+/// The GLOBAL base-design switcher, sitting next to the light/dark toggle. It
+/// switches the whole app's [`DesignLanguage`] via `set_design`, so the choice is
+/// read from the stable global theme — it survives hover/press/focus re-renders
+/// (a scoped `theme_override` would be lost when a widget re-renders on its own).
+fn design_select() -> impl IntoWidget {
+    let idx = match design() {
+        DesignLanguage::Compact => 0,
+        DesignLanguage::Tailwind => 1,
+        DesignLanguage::Material => 2,
+    };
+    select(["Compact", "Tailwind", "Material"]).value(idx).width(132.0).on_changed(|i, _| {
+        set_design(match i {
+            0 => DesignLanguage::Compact,
+            2 => DesignLanguage::Material,
+            _ => DesignLanguage::Tailwind,
+        });
+    })
+}
+
 /// The standard top bar (docs / learn / showcase): background from the page, a hairline
 /// rule beneath it.
 pub fn top_nav() -> AnyWidget {
@@ -111,6 +131,8 @@ fn nav(hero: bool) -> AnyWidget {
             gap_w(4.0),
             brand_mark(logo_px, text_px),
             spacer(),
+            design_select().into_widget(),
+            gap_w(6.0),
             theme_toggle(),
         ])
         .cross_axis_alignment(CrossAxisAlignment::Center)
@@ -122,6 +144,8 @@ fn nav(hero: bool) -> AnyWidget {
             links.push(gap_w(if hero { 4.0 } else { 2.0 }).into_widget());
         }
         links.push(gap_w(if hero { 14.0 } else { 10.0 }).into_widget());
+        links.push(design_select().into_widget());
+        links.push(gap_w(if hero { 10.0 } else { 6.0 }).into_widget());
         links.push(theme_toggle().into_widget());
         links.push(gap_w(if hero { 10.0 } else { 6.0 }).into_widget());
         links.push(
