@@ -2537,7 +2537,7 @@ dependencies = [
 [[package]]
 name = "pebbles"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 dependencies = [
  "pebbles-core",
  "pebbles-foundation",
@@ -2558,7 +2558,7 @@ dependencies = [
 [[package]]
 name = "pebbles-core"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 dependencies = [
  "pebbles-foundation",
  "pebbles-render",
@@ -2571,7 +2571,7 @@ dependencies = [
 [[package]]
 name = "pebbles-foundation"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 dependencies = [
  "kurbo",
  "peniko",
@@ -2581,12 +2581,12 @@ dependencies = [
 [[package]]
 name = "pebbles-icons"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 
 [[package]]
 name = "pebbles-macros"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2596,7 +2596,7 @@ dependencies = [
 [[package]]
 name = "pebbles-render"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 dependencies = [
  "glifo",
  "kurbo",
@@ -2614,7 +2614,7 @@ dependencies = [
 [[package]]
 name = "pebbles-shell"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 dependencies = [
  "accesskit",
  "accesskit_winit",
@@ -2626,6 +2626,7 @@ dependencies = [
  "pebbles-render",
  "pebbles-widgets",
  "peniko",
+ "png",
  "pollster 1.0.1",
  "raw-window-handle",
  "vello",
@@ -2641,7 +2642,7 @@ dependencies = [
 [[package]]
 name = "pebbles-widgets"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#333cec9910ac26bdf4fda82578a8169f3571d248"
+source = "git+https://github.com/pebbles-hq/pebbles#db5c5ccfa99ac70da7af485e551b6af3b8030249"
 dependencies = [
  "base64",
  "image",

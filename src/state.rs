@@ -8,6 +8,7 @@
 use std::cell::RefCell;
 
 use pebbles::prelude::*;
+use pebbles::widgets::DesignLanguage;
 
 thread_local! {
     static ROUTE: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
@@ -16,6 +17,9 @@ thread_local! {
     static DOC_SECTION: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
     static LEARN_SECTION: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
     static MENU_OPEN: RefCell<Option<Signal<bool>>> = const { RefCell::new(None) };
+    /// The design language used to PREVIEW widgets on component screens (a dropdown
+    /// in the screen chrome switches it). Defaults to Tailwind — the richest look.
+    static DESIGN: RefCell<Option<Signal<DesignLanguage>>> = const { RefCell::new(None) };
 }
 
 /// Create the global app-scope state (call once, before any component renders, so
@@ -27,6 +31,20 @@ pub fn init() {
     let _ = doc_section();
     let _ = learn_section();
     let _ = menu_open();
+    let _ = design();
+}
+
+/// The design language widgets are PREVIEWED under on component screens (switched
+/// by the dropdown in the screen chrome). Reading it subscribes; setting it
+/// re-renders every previewed screen.
+pub fn design() -> Signal<DesignLanguage> {
+    DESIGN.with(|cell| {
+        let mut cell = cell.borrow_mut();
+        if cell.is_none() {
+            *cell = Some(create_signal(DesignLanguage::Tailwind));
+        }
+        cell.unwrap()
+    })
 }
 
 /// A counter shared across every window (the same signal, read by capture).
@@ -172,7 +190,8 @@ pub type Route = (&'static str, IconData, &'static str);
 /// The category group a widget `route` belongs to — the sidebar on a widget screen
 /// shows ONLY this group's items (its sibling components), not the whole catalog.
 pub fn group_of(route: &str) -> Option<&'static NavGroup> {
-    NAV.iter().find(|g| g.routes.iter().any(|(r, _, _)| *r == route))
+    NAV.iter()
+        .find(|g| g.routes.iter().any(|(r, _, _)| *r == route))
 }
 
 /// A labelled group of routes — the sidebar renders one section per group so
