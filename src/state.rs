@@ -1,16 +1,20 @@
-//! Global app state — a single [`Signal`] holding the current route.
+//! Global app state — cross-window signals plus the docs' thin adapter over the
+//! framework router.
 //!
-//! This shows SolidJS's headline feature: the **same** `create_signal` primitive is
-//! used for global state. Created once at app scope (via [`init`]), it is read and
-//! written from any component without prop-drilling. `route().get()` subscribes the
-//! calling component; `route().set(..)` re-renders everyone who read it.
+//! Navigation runs through [`pebbles::core::router`], so on the web the Rust route
+//! IS the browser URL (deep links + Back/Forward), and on desktop/mobile it is the
+//! same router held in memory. The docs address screens by a short **id**
+//! (`"buttons"`); [`current_route`] derives that id from the router path (reactive —
+//! reading it subscribes the caller), and [`navigate`] maps an id back to a path.
+//! The other globals here (counter, channel, doc/learn sections, menu) show
+//! SolidJS's headline feature: the **same** `create_signal` primitive, created once
+//! at app scope (via [`init`]) and shared across every window without prop-drilling.
 
 use std::cell::RefCell;
 
 use pebbles::prelude::*;
 
 thread_local! {
-    static ROUTE: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
     static COUNTER: RefCell<Option<Signal<i32>>> = const { RefCell::new(None) };
     static PING: RefCell<Option<Channel<String>>> = const { RefCell::new(None) };
     static DOC_SECTION: RefCell<Option<Signal<String>>> = const { RefCell::new(None) };
@@ -21,12 +25,43 @@ thread_local! {
 /// Create the global app-scope state (call once, before any component renders, so
 /// it's owned globally — and thus shared across windows — rather than by a component).
 pub fn init() {
-    let _ = route();
     let _ = counter();
     let _ = ping();
     let _ = doc_section();
     let _ = learn_section();
     let _ = menu_open();
+    // Dev hook: GALLERY_ROUTE=<route-id> opens straight on a screen (desktop). On
+    // web the framework router seeds itself from the URL, so this is overridden by a
+    // deep link there — which is exactly right.
+    if let Ok(r) = std::env::var("GALLERY_ROUTE") {
+        pebbles::core::router::replace(&id_to_path(&r));
+    }
+}
+
+/// The docs address a route by a short **id** (`"buttons"`, `"landing"`); the
+/// framework router addresses a **path** (`"/buttons"`, `"/"`). These map between
+/// them so the browser URL reads naturally and the landing page is the root.
+fn id_to_path(id: &str) -> String {
+    if id == LANDING || id.is_empty() {
+        "/".to_string()
+    } else {
+        format!("/{id}")
+    }
+}
+fn path_to_id(path: &str) -> String {
+    let p = path.trim_start_matches('/');
+    if p.is_empty() {
+        LANDING.to_string()
+    } else {
+        p.to_string()
+    }
+}
+
+/// The current route **id**, derived from the framework router (reactive — reading
+/// it subscribes the caller, so it re-renders on navigation, incl. browser
+/// Back/Forward on web).
+pub fn current_route() -> String {
+    path_to_id(&pebbles::core::router::path())
 }
 
 /// A counter shared across every window (the same signal, read by capture).
@@ -51,25 +86,12 @@ pub fn ping() -> Channel<String> {
     })
 }
 
-/// The global current-route signal.
-pub fn route() -> Signal<String> {
-    ROUTE.with(|cell| {
-        let mut cell = cell.borrow_mut();
-        if cell.is_none() {
-            // Dev hook: GALLERY_ROUTE=<route-id> opens straight on a screen; default is
-            // the marketing landing page (the front door — the widget catalog now lives
-            // under `docs`).
-            let initial = std::env::var("GALLERY_ROUTE").unwrap_or_else(|_| String::from(LANDING));
-            *cell = Some(create_signal(initial));
-        }
-        cell.unwrap()
-    })
-}
-
 /// Navigate to a route.
 pub fn navigate(to: &str) {
     pebbles::core::log::info(pebbles::core::log::Cat::Nav, format!("navigate → {to}"));
-    route().set(to.to_string());
+    // Through the framework router: on web this also pushes the browser URL (deep
+    // links + Back/Forward); on desktop it is in-memory history.
+    pebbles::core::router::navigate(&id_to_path(to));
 }
 
 /// The two top-level, non-widget routes. Everything else in [`NAV`] is a widget
@@ -172,7 +194,8 @@ pub type Route = (&'static str, IconData, &'static str);
 /// The category group a widget `route` belongs to — the sidebar on a widget screen
 /// shows ONLY this group's items (its sibling components), not the whole catalog.
 pub fn group_of(route: &str) -> Option<&'static NavGroup> {
-    NAV.iter().find(|g| g.routes.iter().any(|(r, _, _)| *r == route))
+    NAV.iter()
+        .find(|g| g.routes.iter().any(|(r, _, _)| *r == route))
 }
 
 /// A labelled group of routes — the sidebar renders one section per group so

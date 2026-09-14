@@ -8,7 +8,9 @@
 use pebbles::prelude::*;
 
 use crate::screens;
-use crate::state::{DOCS, LANDING, LEARN, NAV, SHOWCASE, group_of, navigate, route, to_components};
+use crate::state::{
+    DOCS, LANDING, LEARN, NAV, SHOWCASE, current_route, group_of, navigate, to_components,
+};
 
 /// A small uppercase section header row for the sidebar.
 fn nav_section(label: &str) -> impl IntoWidget {
@@ -61,7 +63,7 @@ fn install_tour() {
 
 pub fn app() -> AnyWidget {
     install_tour();
-    let current = route().get();
+    let current = current_route();
 
     // Top-level surfaces: landing + docs index are full-bleed pages of their own;
     // everything else is a widget screen in the sidenav + content shell below.
