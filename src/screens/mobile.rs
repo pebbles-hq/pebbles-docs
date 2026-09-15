@@ -127,7 +127,7 @@ pub fn scaffold_slots_screen() -> Element {
                                 button("Save").on_pressed(move || taps.update(|n| *n += 1)),
                             ]),
                         )
-                        .fab(fab(lucide::PLUS).mini(true).on_pressed(move || taps.update(|n| *n += 1))),
+                        .fab(fab(tabler::PLUS).mini(true).on_pressed(move || taps.update(|n| *n += 1))),
                 )),
             doc("drawer / end_drawer")
                 .description("A side drawer is the existing sheet(Side::Left / Side::Right) — a modal side panel. (Wiring it as a dedicated Scaffold slot with an auto-hamburger is a follow-up.)")

@@ -2537,7 +2537,7 @@ dependencies = [
 [[package]]
 name = "pebbles"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 dependencies = [
  "pebbles-core",
  "pebbles-foundation",
@@ -2550,15 +2550,17 @@ dependencies = [
 [[package]]
 name = "pebbles-code-editor"
 version = "0.1.0"
-source = "git+https://github.com/pebbles-hq/pebbles-code-editor#481b37ac91b558c1bf05ca4423a24935ef3cc41d"
+source = "git+https://github.com/pebbles-hq/pebbles-code-editor#ef693a956b694c74398111342b1c975383238f85"
 dependencies = [
  "pebbles",
+ "regex",
+ "ropey",
 ]
 
 [[package]]
 name = "pebbles-core"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 dependencies = [
  "pebbles-foundation",
  "pebbles-render",
@@ -2571,7 +2573,7 @@ dependencies = [
 [[package]]
 name = "pebbles-foundation"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 dependencies = [
  "kurbo",
  "peniko",
@@ -2581,12 +2583,12 @@ dependencies = [
 [[package]]
 name = "pebbles-icons"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 
 [[package]]
 name = "pebbles-macros"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2596,7 +2598,7 @@ dependencies = [
 [[package]]
 name = "pebbles-render"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 dependencies = [
  "glifo",
  "kurbo",
@@ -2614,7 +2616,7 @@ dependencies = [
 [[package]]
 name = "pebbles-shell"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 dependencies = [
  "accesskit",
  "accesskit_winit",
@@ -2642,7 +2644,7 @@ dependencies = [
 [[package]]
 name = "pebbles-widgets"
 version = "0.0.1"
-source = "git+https://github.com/pebbles-hq/pebbles#92bb7d6c6a20afa20ca7047c65f54c58dd757ae8"
+source = "git+https://github.com/pebbles-hq/pebbles#2b331d5dd99f3d2948b7e0b37568ed38cfc0f767"
 dependencies = [
  "base64",
  "image",
@@ -3114,6 +3116,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ropey"
+version = "1.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93411e420bcd1a75ddd1dc3caf18c23155eda2c090631a85af21ba19e97093b5"
+dependencies = [
+ "smallvec",
+ "str_indices",
+]
+
+[[package]]
 name = "roxmltree"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3424,6 +3436,12 @@ name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
+
+[[package]]
+name = "str_indices"
+version = "0.4.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d08889ec5408683408db66ad89e0e1f93dff55c73a4ccc71c427d5b277ee47e6"
 
 [[package]]
 name = "strict-num"

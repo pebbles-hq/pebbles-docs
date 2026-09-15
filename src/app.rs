@@ -89,7 +89,7 @@ pub fn app() -> AnyWidget {
     let all_components = pressable(padding(
         EdgeInsets::symmetric(6.0, 10.0),
         row(children![
-            icon(lucide::ARROW_LEFT).size(15.0).color(c.muted_foreground),
+            icon(tabler::ARROW_LEFT).size(15.0).color(c.muted_foreground),
             gap_w(8.0),
             text("All components").size(13.0).weight(500.0).color(c.muted_foreground),
         ])

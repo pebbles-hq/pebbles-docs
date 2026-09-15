@@ -54,7 +54,7 @@ pub fn badges() -> Element {
                             .padding(EdgeInsets::symmetric(8.0, 2.0))
                             .child(
                                 row(children![
-                                    icon(lucide::SPARKLES).size(12.0).color(theme().colors.muted_foreground),
+                                    icon(tabler::SPARKLES).size(12.0).color(theme().colors.muted_foreground),
                                     gap_w(4.0),
                                     text("New").size(11.0).weight(500.0),
                                 ])

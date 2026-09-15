@@ -155,9 +155,9 @@ pub fn desktop_mock() -> impl IntoWidget {
                     .weight(600.0)
                     .color(c.muted_foreground),
                 spacer(),
-                icon(lucide::SEARCH).size(13.0).color(c.muted_foreground),
+                icon(tabler::SEARCH).size(13.0).color(c.muted_foreground),
                 gap_w(12.0),
-                icon(lucide::BELL).size(13.0).color(c.muted_foreground),
+                icon(tabler::BELL).size(13.0).color(c.muted_foreground),
             ])
             .cross_axis_alignment(CrossAxisAlignment::Center),
         );
@@ -168,15 +168,15 @@ pub fn desktop_mock() -> impl IntoWidget {
         .padding(EdgeInsets::all(10.0))
         .child(
             column(children![
-                rail_item(lucide::LAYOUT_DASHBOARD, "Dashboard", true),
+                rail_item(tabler::LAYOUT_DASHBOARD, "Dashboard", true),
                 gap_h(3.0),
-                rail_item(lucide::TABLE, "Reports", false),
+                rail_item(tabler::TABLE, "Reports", false),
                 gap_h(3.0),
-                rail_item(lucide::USER, "Customers", false),
+                rail_item(tabler::USER, "Customers", false),
                 gap_h(3.0),
-                rail_item(lucide::CREDIT_CARD, "Billing", false),
+                rail_item(tabler::CREDIT_CARD, "Billing", false),
                 gap_h(3.0),
-                rail_item(lucide::PALETTE, "Appearance", false),
+                rail_item(tabler::PALETTE, "Appearance", false),
             ])
             .cross_axis_alignment(CrossAxisAlignment::Stretch)
             .main_axis_size(MainAxisSize::Min),
@@ -203,7 +203,7 @@ pub fn desktop_mock() -> impl IntoWidget {
                         .padding(EdgeInsets::symmetric(12.0, 7.0))
                         .child(
                             row(children![
-                                icon(lucide::PLUS).size(13.0).color(palette::WHITE),
+                                icon(tabler::PLUS).size(13.0).color(palette::WHITE),
                                 gap_w(5.0),
                                 text("New").size(12.0).weight(600.0).color(palette::WHITE),
                             ])
@@ -332,7 +332,7 @@ fn phone_row(ic: IconData, tint: Color, title: &str, sub: &str) -> impl IntoWidg
             .cross_axis_alignment(CrossAxisAlignment::Start)
             .main_axis_size(MainAxisSize::Min),
         ),
-        icon(lucide::CHEVRON_RIGHT)
+        icon(tabler::CHEVRON_RIGHT)
             .size(15.0)
             .color(c.muted_foreground),
     ])
@@ -368,7 +368,7 @@ pub fn mobile_mock() -> impl IntoWidget {
                     row(children![
                         text("Wallet").size(15.0).bold().color(palette::WHITE),
                         spacer(),
-                        icon(lucide::BELL).size(16.0).color(palette::WHITE),
+                        icon(tabler::BELL).size(16.0).color(palette::WHITE),
                     ])
                     .cross_axis_alignment(CrossAxisAlignment::Center),
                     gap_h(16.0),
@@ -394,22 +394,22 @@ pub fn mobile_mock() -> impl IntoWidget {
                             .color(c.muted_foreground),
                         gap_h(12.0),
                         phone_row(
-                            lucide::CREDIT_CARD,
+                            tabler::CREDIT_CARD,
                             brand::BROWN,
                             "Apple Store",
                             "Today · Shopping"
                         ),
                         gap_h(14.0),
-                        phone_row(lucide::HOUSE, brand::TEAL, "Rent", "Yesterday · Housing"),
+                        phone_row(tabler::HOME, brand::TEAL, "Rent", "Yesterday · Housing"),
                         gap_h(14.0),
                         phone_row(
-                            lucide::COFFEE,
+                            tabler::COFFEE,
                             brand::NOSE,
                             "Blue Bottle",
                             "Yesterday · Food"
                         ),
                         gap_h(14.0),
-                        phone_row(lucide::GAUGE, palette::GREEN, "Payday", "Mon · Income"),
+                        phone_row(tabler::GAUGE, palette::GREEN, "Payday", "Mon · Income"),
                     ])
                     .cross_axis_alignment(CrossAxisAlignment::Stretch)
                     .main_axis_size(MainAxisSize::Min),
@@ -425,10 +425,10 @@ pub fn mobile_mock() -> impl IntoWidget {
             .padding(EdgeInsets::symmetric(8.0, 12.0))
             .child(
                 row(children![
-                    tab(lucide::HOUSE, true),
-                    tab(lucide::TABLE, false),
-                    tab(lucide::CREDIT_CARD, false),
-                    tab(lucide::USER, false),
+                    tab(tabler::HOME, true),
+                    tab(tabler::TABLE, false),
+                    tab(tabler::CREDIT_CARD, false),
+                    tab(tabler::USER, false),
                 ])
                 .cross_axis_alignment(CrossAxisAlignment::Center),
             ),

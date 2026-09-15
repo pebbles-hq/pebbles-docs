@@ -129,9 +129,9 @@ pub fn data_tables() -> Element {
                             .row(vec!["Ship gallery", "Medium"])
                             .sortable(0)
                             .sortable(1)
-                            .sort_asc_icon(lucide::ARROW_UP)
-                            .sort_desc_icon(lucide::ARROW_DOWN)
-                            .sort_idle_icon(lucide::ARROWS_UP_FROM_LINE)
+                            .sort_asc_icon(tabler::ARROW_UP)
+                            .sort_desc_icon(tabler::ARROW_DOWN)
+                            .sort_idle_icon(tabler::ARROW_BAR_TO_UP)
                             .sort_icon_size(14.0)
                             .sort_icon_color(palette::blue::S600)
                             .style(style().border(Border::new(theme().colors.border, 1.0))),

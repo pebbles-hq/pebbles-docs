@@ -7,11 +7,11 @@ use crate::ui::{doc, gap_h, screen};
 pub fn icons() -> Element {
     let c = theme().colors;
 
-    // A live filter over the whole bundled Lucide set.
+    // A live filter over the whole bundled Tabler set.
     let query = create_signal(String::new());
     let q = query.get().to_lowercase();
     let matches: Rc<Vec<(&'static str, IconData)>> = Rc::new(
-        lucide::ALL.iter().filter(|(name, _)| q.is_empty() || name.contains(q.as_str())).copied().collect(),
+        tabler::ALL.iter().filter(|(name, _)| q.is_empty() || name.contains(q.as_str())).copied().collect(),
     );
     let count = matches.len();
 
@@ -42,12 +42,12 @@ pub fn icons() -> Element {
 
     screen("Icons")
 
-        .description("The default icon set is Lucide — every glyph below ships in the framework. Icons are plain data (IconData), so any Lucide glyph, a named IconKind, or your own icon drops in wherever an icon is accepted.")
+        .description("The default icon set is Tabler — every glyph below ships in the framework. Icons are plain data (IconData), so any Tabler glyph, a named IconKind, or your own icon drops in wherever an icon is accepted.")
 
         .body(
         children![
             doc("Named handles")
-                .description("IconKind covers the common glyphs the widgets use — icon(IconKind::Check). Each resolves to a Lucide icon.")
+                .description("IconKind covers the common glyphs the widgets use — icon(IconKind::Check). Each resolves to a Tabler icon.")
                 .body(
                 wrap(children![
                     icon(IconKind::Check).size(22.0),
@@ -61,8 +61,8 @@ pub fn icons() -> Element {
                 ])
                 .spacing(14.0),
             ),
-            doc("The full Lucide set")
-                .description("Reach any of the bundled icons by const — icon(lucide::CAMERA) — or by name at runtime — icon(lucide::by_name(\"circle-check\").unwrap()). Search the whole catalog:")
+            doc("The full Tabler set")
+                .description("Reach any of the bundled icons by const — icon(tabler::CAMERA) — or by name at runtime — icon(tabler::by_name(\"circle-check\").unwrap()). Search the whole catalog:")
                 .body(
                 column(
                     children![
@@ -72,7 +72,7 @@ pub fn icons() -> Element {
                             .width(360.0)
                             .on_changed(move |s| query.set(s.to_string())),
                         gap_h(6.0),
-                        muted(format!("{count} of {} icons", lucide::ALL.len())),
+                        muted(format!("{count} of {} icons", tabler::ALL.len())),
                         gap_h(10.0),
                         grid,
                     ],
@@ -89,7 +89,7 @@ pub fn icons() -> Element {
     )
 }
 
-// A custom, non-Lucide icon defined entirely in user code — a filled heart.
+// A custom, non-Tabler icon defined entirely in user code — a filled heart.
 const HEART: IconData = IconData::filled(
     24.0,
     &[IconPrim::Path("M12 21c-1-.7-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-7 10.3-8 11z")],

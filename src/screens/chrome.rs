@@ -32,19 +32,19 @@ pub fn chrome_screen() -> Element {
                                     .on_collapse_changed(move |c| collapsed.set(c))
                                     .item(
                                         nav_item("Home")
-                                            .icon(lucide::LAYOUT_DASHBOARD)
+                                            .icon(tabler::LAYOUT_DASHBOARD)
                                             .selected(sel.get() == 0)
                                             .on_select(move || sel.set(0)),
                                     )
                                     .item(
                                         nav_item("Files")
-                                            .icon(lucide::FOLDER_TREE)
+                                            .icon(tabler::FOLDERS)
                                             .selected(sel.get() == 1)
                                             .on_select(move || sel.set(1)),
                                     )
                                     .item(
                                         nav_item("Colors")
-                                            .icon(lucide::PALETTE)
+                                            .icon(tabler::PALETTE)
                                             .selected(sel.get() == 2)
                                             .on_select(move || sel.set(2)),
                                     ),
@@ -52,17 +52,17 @@ pub fn chrome_screen() -> Element {
                             .bottom(
                                 bottom_nav()
                                     .item(
-                                        bottom_nav_item(lucide::LAYOUT_DASHBOARD, "Home")
+                                        bottom_nav_item(tabler::LAYOUT_DASHBOARD, "Home")
                                             .selected(sel.get() == 0)
                                             .on_select(move || sel.set(0)),
                                     )
                                     .item(
-                                        bottom_nav_item(lucide::FOLDER_TREE, "Files")
+                                        bottom_nav_item(tabler::FOLDERS, "Files")
                                             .selected(sel.get() == 1)
                                             .on_select(move || sel.set(1)),
                                     )
                                     .item(
-                                        bottom_nav_item(lucide::PALETTE, "Colors")
+                                        bottom_nav_item(tabler::PALETTE, "Colors")
                                             .selected(sel.get() == 2)
                                             .on_select(move || sel.set(2)),
                                     ),

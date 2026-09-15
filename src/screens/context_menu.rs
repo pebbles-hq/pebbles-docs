@@ -25,13 +25,13 @@ fn global_switch() -> impl IntoWidget {
                     gap_w(8.0),
                     button("Custom options").variant(ButtonVariant::Outline).size(ButtonSize::Sm).on_pressed(|| {
                         set_global_menu(vec![
-                            menu_item("Refresh").icon(lucide::REFRESH_CW).on_select(|| {}).into(),
+                            menu_item("Refresh").icon(tabler::REFRESH).on_select(|| {}).into(),
                             menu_sub(
                                 "Go to",
                                 [menu_item("Overview"), menu_item("Data Table")],
                             ),
                             menu_separator(),
-                            menu_item("Settings").icon(lucide::SETTINGS).on_select(|| {}).into(),
+                            menu_item("Settings").icon(tabler::SETTINGS).on_select(|| {}).into(),
                         ]);
                     }),
                     gap_w(8.0),
@@ -85,10 +85,10 @@ fn per_widget() -> impl IntoWidget {
                     button("Right-click for a custom menu").variant(ButtonVariant::Outline),
                     move |e| {
                         set_global_menu(vec![
-                            menu_item("Copy").icon(lucide::COPY).on_select(|| {}).into(),
-                            menu_item("Cut").icon(lucide::SCISSORS).on_select(|| {}).into(),
+                            menu_item("Copy").icon(tabler::COPY).on_select(|| {}).into(),
+                            menu_item("Cut").icon(tabler::SCISSORS).on_select(|| {}).into(),
                             menu_separator(),
-                            menu_item("Delete").icon(lucide::TRASH).on_select(|| {}).into(),
+                            menu_item("Delete").icon(tabler::TRASH).on_select(|| {}).into(),
                         ]);
                         show_global_menu_here(e.global.x, e.global.y);
                         reset_global_menu();

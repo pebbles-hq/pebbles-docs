@@ -22,7 +22,7 @@ fn demo_tree() -> FileTree {
     t.insert(None, FsKind::File, "Cargo.toml");
     t.insert(None, FsKind::File, ".gitignore");
     // Per-node override: this file styles ITSELF, whatever theme is installed.
-    t.insert_node(None, FsNode::file("TODO.md").icon(lucide::STAR).color(palette::amber::S500));
+    t.insert_node(None, FsNode::file("TODO.md").icon(tabler::STAR).color(palette::amber::S500));
     t
 }
 
@@ -35,16 +35,16 @@ fn demo_tree() -> FileTree {
 fn code_theme(n: &FsNode, _open: bool) -> Option<(IconData, Option<Color>)> {
     if n.kind == FsKind::Folder {
         return match n.name.as_str() {
-            "src" | "ui" => Some((lucide::FOLDER_COG, None)),
-            "docs" => Some((lucide::BOOK_OPEN, None)),
+            "src" | "ui" => Some((tabler::FOLDER_COG, None)),
+            "docs" => Some((tabler::BOOK, None)),
             _ => None,
         };
     }
     match n.name.rsplit('.').next() {
-        Some("rs") => Some((lucide::FILE_CODE, Some(palette::orange::S400))),
-        Some("md") => Some((lucide::FILE_TEXT, Some(palette::sky::S400))),
-        Some("png") | Some("jpg") => Some((lucide::FILE_IMAGE, Some(palette::violet::S400))),
-        Some("toml") | Some("gitignore") => Some((lucide::COG, None)),
+        Some("rs") => Some((tabler::FILE_CODE, Some(palette::orange::S400))),
+        Some("md") => Some((tabler::FILE_TEXT, Some(palette::sky::S400))),
+        Some("png") | Some("jpg") => Some((tabler::FILE_TYPE_JPG, Some(palette::violet::S400))),
+        Some("toml") | Some("gitignore") => Some((tabler::SETTINGS, None)),
         _ => None,
     }
 }
@@ -52,7 +52,7 @@ fn code_theme(n: &FsNode, _open: bool) -> Option<(IconData, Option<Color>)> {
 /// "Colorful": the default glyphs, tinted per top-level kind/name.
 fn colorful_theme(n: &FsNode, open: bool) -> Option<(IconData, Option<Color>)> {
     if n.kind == FsKind::Folder {
-        let d = if open { lucide::FOLDER_OPEN } else { lucide::FOLDER };
+        let d = if open { tabler::FOLDER_OPEN } else { tabler::FOLDER };
         let color = match n.name.as_str() {
             "src" => palette::sky::S500,
             "assets" => palette::emerald::S500,
@@ -67,7 +67,7 @@ fn colorful_theme(n: &FsNode, open: bool) -> Option<(IconData, Option<Color>)> {
 /// "Minimal": quiet dots — glyphs get out of the way entirely.
 fn minimal_theme(n: &FsNode, _open: bool) -> Option<(IconData, Option<Color>)> {
     let _ = n;
-    Some((lucide::DOT, None))
+    Some((tabler::POINT, None))
 }
 
 pub fn file_explorer_screen() -> Element {
@@ -83,7 +83,7 @@ pub fn file_explorer_screen() -> Element {
                     column(children![
                         text_field()
                             .placeholder("Filter files… (bound to explorer.filter())")
-                            .leading(lucide::SEARCH)
+                            .leading(tabler::SEARCH)
                             .bind(explorer.filter())
                             .width(320.0),
                         gap_h(8.0),
@@ -159,13 +159,13 @@ pub fn file_explorer_screen() -> Element {
                     .main_axis_size(MainAxisSize::Min),
                 ),
             doc("Icon themes — the IDE theming hook")
-                .description("set_icon_theme(fn) maps every node to any of the ~1800 bundled lucide glyphs + a color — exactly the surface an IDE's icon theming needs; return None per node to keep the default look, and per-node FsNode::icon/color overrides (the starred TODO.md) always win. Switching re-renders the tree live.")
+                .description("set_icon_theme(fn) maps every node to any of the ~1800 bundled tabler glyphs + a color — exactly the surface an IDE's icon theming needs; return None per node to keep the default look, and per-node FsNode::icon/color overrides (the starred TODO.md) always win. Switching re-renders the tree live.")
                 .body(
                     column(children![
                         select(["Default", "Code (by file type)", "Colorful folders", "Minimal dots"])
                             .width(260.0)
                             .value(0)
-                            .leading(lucide::PALETTE)
+                            .leading(tabler::PALETTE)
                             .on_changed(move |i, _| match i {
                                 1 => explorer.set_icon_theme(code_theme),
                                 2 => explorer.set_icon_theme(colorful_theme),

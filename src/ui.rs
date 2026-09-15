@@ -59,7 +59,7 @@ pub fn logo() -> Option<Image> {
 pub fn logo_mark(size: f64) -> AnyWidget {
     match logo() {
         Some(img) => ImageView::image(img).fit(ImageFit::Contain).width(size).height(size).into_widget(),
-        None => icon(lucide::GEM).size(size * 0.6).color(brand::BROWN).into_widget(),
+        None => icon(tabler::DIAMOND).size(size * 0.6).color(brand::BROWN).into_widget(),
     }
 }
 

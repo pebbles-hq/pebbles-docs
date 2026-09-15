@@ -270,7 +270,7 @@ fn render_grid(p: &GridProps) -> Column {
                 .padding(EdgeInsets::all(40.0))
                 .child(
                     column(children![
-                        icon(lucide::SEARCH_X).size(26.0).color(c.muted_foreground),
+                        icon(tabler::ZOOM_CANCEL).size(26.0).color(c.muted_foreground),
                         gap_h(12.0),
                         text(format!("No matches for “{}”", p.query.get()))
                             .size(15.0)
@@ -290,7 +290,7 @@ fn render_grid(p: &GridProps) -> Column {
 fn catalog(title: &str, blurb: &str, query: Signal<String>, widgets: bool) -> AnyWidget {
     let c = theme().colors;
     let search =
-        text_field().leading(lucide::SEARCH).placeholder("Search…").width(560.0).bind(query);
+        text_field().leading(tabler::SEARCH).placeholder("Search…").width(560.0).bind(query);
     column(children![
         text(title.to_string()).size(30.0).bold().color(c.foreground),
         gap_h(6.0),
@@ -498,7 +498,7 @@ fn page(id: &str) -> AnyWidget {
             "Compose UIs from flex and box widgets — the same model as Flutter.",
             vec![
                 p("`row` and `column` lay children along an axis; `expanded` and `spacer` distribute leftover space; `stack` + `positioned` overlay children; `container` adds padding, sizing, and decoration. Alignment is controlled with `main_axis_alignment` / `cross_axis_alignment`."),
-                code("row(children![\n    icon(lucide::USER),\n    gap_w(8.0),\n    expanded(text(\"Name\")),\n    button(\"Edit\"),\n])\n.cross_axis_alignment(CrossAxisAlignment::Center)"),
+                code("row(children![\n    icon(tabler::USER),\n    gap_w(8.0),\n    expanded(text(\"Name\")),\n    button(\"Edit\"),\n])\n.cross_axis_alignment(CrossAxisAlignment::Center)"),
                 p("See the Widgets catalog for the full set — wraps, grids, scroll views, resizable and split panes, and more."),
             ],
         ),
@@ -515,7 +515,7 @@ fn page(id: &str) -> AnyWidget {
             "A cohesive, utility-driven theme with first-class light and dark modes.",
             vec![
                 p("`theme()` returns the active theme; `theme().colors` gives semantic roles (background, foreground, card, primary, muted, border…). Set the theme once at startup and flip it live at any time — every component that read `theme()` re-renders."),
-                code("Theme::light().make_current();     // at startup\n\nicon_button(lucide::MOON).on_pressed(toggle_theme);  // flip live"),
+                code("Theme::light().make_current();     // at startup\n\nicon_button(tabler::MOON).on_pressed(toggle_theme);  // flip live"),
             ],
         ),
         "routing" => prose(

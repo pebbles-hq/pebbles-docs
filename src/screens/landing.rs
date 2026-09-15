@@ -107,22 +107,22 @@ fn hero() -> impl IntoWidget {
         button("Browse components")
             .variant(ButtonVariant::Primary)
             .size(ButtonSize::Lg)
-            .leading(lucide::LAYOUT_GRID)
+            .leading(tabler::LAYOUT_GRID)
             .on_pressed(to_components),
         gap_w(12.0),
         button("View on GitHub")
             .variant(ButtonVariant::Outline)
             .size(ButtonSize::Lg)
-            .leading(lucide::STAR)
+            .leading(tabler::STAR)
             .on_pressed(|| eprintln!("open https://github.com/pebbles-hq/pebbles")),
     ])
     .main_axis_size(MainAxisSize::Min);
 
     let trust = wrap(children![
-        chip(lucide::ZAP, "Vello GPU renderer"),
-        chip(lucide::LAYERS, "Retained widget tree"),
-        chip(lucide::MONITOR_SMARTPHONE, "Desktop · Web · Mobile"),
-        chip(lucide::SHIELD_CHECK, "Type-safe, no GC"),
+        chip(tabler::BOLT, "Vello GPU renderer"),
+        chip(tabler::STACK, "Retained widget tree"),
+        chip(tabler::DEVICES, "Desktop · Web · Mobile"),
+        chip(tabler::SHIELD_CHECK, "Type-safe, no GC"),
     ])
     .spacing(10.0)
     .run_spacing(10.0)
@@ -232,12 +232,12 @@ fn features() -> impl IntoWidget {
             gap_h(36.0),
             center(
                 wrap(children![
-                    feature_card(lucide::ZAP, brand::BROWN, "Fine-grained reactivity", "Signals in the spirit of SolidJS drive the tree. One create_signal primitive for local and global state — no prop-drilling, no VDOM diffing."),
-                    feature_card(lucide::LAYOUT_GRID, brand::TAN, "60+ styled components", "Buttons, inputs, dialogs, sheets, data tables, command palette — a full themed catalog, light and dark, with utility styling in the spirit of Tailwind."),
-                    feature_card(lucide::CPU, brand::TEAL, "GPU rendering via Vello", "Every frame is rasterized on the GPU. Sub-pixel text, gradients, blurs and clips — smooth at any window size."),
-                    feature_card(lucide::MONITOR_SMARTPHONE, palette::GREEN, "One codebase, everywhere", "The same widget tree runs on desktop (winit + wgpu), the web (WebGPU/wasm), and mobile shells."),
-                    feature_card(lucide::WAND, brand::NOSE, "Motion built in", "Implicit and explicit animation widgets — animated containers, transitions, hero flights — with springs and curves."),
-                    feature_card(lucide::SHIELD_CHECK, palette::AMBER, "Type-safe & fast", "Plain functions and closures, no macros to learn. Rust's borrow checker, zero GC pauses, predictable memory."),
+                    feature_card(tabler::BOLT, brand::BROWN, "Fine-grained reactivity", "Signals in the spirit of SolidJS drive the tree. One create_signal primitive for local and global state — no prop-drilling, no VDOM diffing."),
+                    feature_card(tabler::LAYOUT_GRID, brand::TAN, "60+ styled components", "Buttons, inputs, dialogs, sheets, data tables, command palette — a full themed catalog, light and dark, with utility styling in the spirit of Tailwind."),
+                    feature_card(tabler::CPU, brand::TEAL, "GPU rendering via Vello", "Every frame is rasterized on the GPU. Sub-pixel text, gradients, blurs and clips — smooth at any window size."),
+                    feature_card(tabler::DEVICES, palette::GREEN, "One codebase, everywhere", "The same widget tree runs on desktop (winit + wgpu), the web (WebGPU/wasm), and mobile shells."),
+                    feature_card(tabler::WAND, brand::NOSE, "Motion built in", "Implicit and explicit animation widgets — animated containers, transitions, hero flights — with springs and curves."),
+                    feature_card(tabler::SHIELD_CHECK, palette::AMBER, "Type-safe & fast", "Plain functions and closures, no macros to learn. Rust's borrow checker, zero GC pauses, predictable memory."),
                 ])
                 .spacing(18.0)
                 .run_spacing(18.0)
@@ -308,12 +308,12 @@ fn code_section() -> impl IntoWidget {
                 .color(c.muted_foreground),
                 gap_h(22.0),
                 column(children![
-                    bullet(lucide::CHECK, "Function components — no structs or traits"),
+                    bullet(tabler::CHECK, "Function components — no structs or traits"),
                     gap_h(10.0),
-                    bullet(lucide::CHECK, "Signals for local and global state alike"),
+                    bullet(tabler::CHECK, "Signals for local and global state alike"),
                     gap_h(10.0),
                     bullet(
-                        lucide::CHECK,
+                        tabler::CHECK,
                         "Hot, incremental builds; runs on every desktop OS"
                     ),
                 ])
@@ -380,7 +380,7 @@ fn cta() -> impl IntoWidget {
                             .size(ButtonSize::Lg)
                             .color(palette::WHITE)
                             .text_color(brand::BROWN)
-                            .trailing(lucide::ARROW_RIGHT)
+                            .trailing(tabler::ARROW_RIGHT)
                             .on_pressed(to_components),
                     ),
                 ])

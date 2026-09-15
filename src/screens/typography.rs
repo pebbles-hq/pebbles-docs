@@ -176,10 +176,10 @@ fn alignment_playground(align: Signal<usize>) -> impl IntoWidget {
         .body(
             column(children![
                 row(children![
-                    align_button("Left", lucide::TEXT_ALIGN_START, 0, align),
-                    align_button("Center", lucide::TEXT_ALIGN_CENTER, 1, align),
-                    align_button("Right", lucide::TEXT_ALIGN_END, 2, align),
-                    align_button("Justified", lucide::TEXT_ALIGN_JUSTIFY, 3, align),
+                    align_button("Left", tabler::ALIGN_LEFT, 0, align),
+                    align_button("Center", tabler::ALIGN_CENTER, 1, align),
+                    align_button("Right", tabler::ALIGN_RIGHT, 2, align),
+                    align_button("Justified", tabler::ALIGN_JUSTIFIED, 3, align),
                     gap_w(6.0),
                     muted(format!("TextAlign::{name}")).size(12.0),
                 ])

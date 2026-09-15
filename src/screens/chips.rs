@@ -74,13 +74,13 @@ fn icons() -> impl IntoWidget {
         )
         .body(
             row(children![
-                chip("Work").icon(lucide::BRIEFCASE),
+                chip("Work").icon(tabler::BRIEFCASE),
                 gap_w(8.0),
-                chip("Personal").icon(lucide::HOUSE),
+                chip("Personal").icon(tabler::HOME),
                 gap_w(8.0),
-                chip("Starred").icon(lucide::STAR).deletable(true).on_deleted(|| {}),
+                chip("Starred").icon(tabler::STAR).deletable(true).on_deleted(|| {}),
                 gap_w(8.0),
-                chip("Locked").icon(lucide::LOCK).disabled(true),
+                chip("Locked").icon(tabler::LOCK).disabled(true),
             ])
             .main_axis_size(MainAxisSize::Min),
         )

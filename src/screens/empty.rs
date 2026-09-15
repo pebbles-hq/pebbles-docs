@@ -14,7 +14,7 @@ pub fn empty_screen() -> Element {
                         .decoration(BoxDecoration::new().border(Border::new(theme().colors.border, 1.0)).radius(BorderRadius::all(theme().radius)))
                         .child(
                             empty()
-                                .icon(lucide::INBOX)
+                                .icon(tabler::INBOX)
                                 .title("No results found")
                                 .description("Try a different search term, or clear the filters.")
                                 .action(button("Clear filters").variant(ButtonVariant::Outline)),
@@ -29,13 +29,13 @@ pub fn empty_screen() -> Element {
                         .child(empty().title("Nothing here")),
                 ),
             doc("Icon gallery")
-                .description("Any Lucide glyph works in the soft circle.")
+                .description("Any Tabler glyph works in the soft circle.")
                 .body(
                     wrap(children![
-                        mini_empty(lucide::SEARCH, "No matches"),
-                        mini_empty(lucide::MAIL, "Inbox zero"),
-                        mini_empty(lucide::STAR, "No favorites"),
-                        mini_empty(lucide::CLOCK, "Nothing scheduled"),
+                        mini_empty(tabler::SEARCH, "No matches"),
+                        mini_empty(tabler::MAIL, "Inbox zero"),
+                        mini_empty(tabler::STAR, "No favorites"),
+                        mini_empty(tabler::CLOCK, "Nothing scheduled"),
                     ])
                     .spacing(10.0),
                 ),
@@ -47,7 +47,7 @@ pub fn empty_screen() -> Element {
                         .decoration(BoxDecoration::new().border(Border::new(theme().colors.border, 1.0)).radius(BorderRadius::all(theme().radius)))
                         .child(
                             empty()
-                                .icon(lucide::FILE_PLUS)
+                                .icon(tabler::FILE_PLUS)
                                 .title("No projects yet")
                                 .description("Create your first project to get started.")
                                 .action(button("New project")),

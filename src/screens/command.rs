@@ -11,20 +11,20 @@ pub fn command_screen() -> Element {
                 "Suggestions",
                 [
                     command_item("New File")
-                        .icon(lucide::FILE_PLUS)
+                        .icon(tabler::FILE_PLUS)
                         .shortcut("⌘N")
                         .on_select(move || picked.set("Picked: New File".into())),
                     command_item("Open Project")
-                        .icon(lucide::FOLDER_OPEN)
+                        .icon(tabler::FOLDER_OPEN)
                         .on_select(move || picked.set("Picked: Open Project".into())),
                 ],
             ),
             command_group(
                 "Settings",
                 [
-                    command_item("Toggle Theme").icon(lucide::MOON).on_select(toggle_theme),
+                    command_item("Toggle Theme").icon(tabler::MOON).on_select(toggle_theme),
                     command_item("Toggle Fullscreen")
-                        .icon(lucide::MAXIMIZE)
+                        .icon(tabler::MAXIMIZE)
                         .on_select(move || picked.set("Picked: Toggle Fullscreen".into())),
                 ],
             ),

@@ -80,7 +80,7 @@ fn brand_mark(logo_px: f64, text_px: f32) -> impl IntoWidget {
 }
 
 fn theme_toggle() -> impl IntoWidget {
-    icon_button(if theme().dark { lucide::SUN } else { lucide::MOON }).on_pressed(toggle_theme)
+    icon_button(if theme().dark { tabler::SUN } else { tabler::MOON }).on_pressed(toggle_theme)
 }
 
 /// The GLOBAL base-design switcher, sitting next to the light/dark toggle. It
@@ -127,7 +127,7 @@ fn nav(hero: bool) -> AnyWidget {
         // Menu button (left of the logo), brand, then just the theme toggle. The links
         // live in the drawer the button opens.
         row(children![
-            icon_button(lucide::MENU).on_pressed(toggle_menu),
+            icon_button(tabler::MENU_2).on_pressed(toggle_menu),
             gap_w(4.0),
             brand_mark(logo_px, text_px),
             spacer(),
@@ -151,7 +151,7 @@ fn nav(hero: bool) -> AnyWidget {
         links.push(
             button("Get started")
                 .size(if hero { ButtonSize::Md } else { ButtonSize::Sm })
-                .trailing(lucide::ARROW_RIGHT)
+                .trailing(tabler::ARROW_RIGHT)
                 .on_pressed(to_learn)
                 .into_widget(),
         );
@@ -213,7 +213,7 @@ pub fn mobile_menu(extra: Vec<AnyWidget>) -> AnyWidget {
     }
     items.push(gap_h(10.0).into_widget());
     items.push(
-        button("Get started").size(ButtonSize::Md).full_width().trailing(lucide::ARROW_RIGHT).on_pressed(move || {
+        button("Get started").size(ButtonSize::Md).full_width().trailing(tabler::ARROW_RIGHT).on_pressed(move || {
             close_menu();
             to_learn();
         }).into_widget(),

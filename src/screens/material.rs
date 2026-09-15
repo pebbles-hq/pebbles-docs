@@ -20,7 +20,7 @@ pub fn fab_screen() -> Element {
                 .description("Standard (56px), mini (40px), and extended (icon + label) forms. Each press bumps the counter.")
                 .body(column(children![
                     row(children![
-                        fab(lucide::PLUS).on_pressed(move || taps.update(|n| *n += 1)),
+                        fab(tabler::PLUS).on_pressed(move || taps.update(|n| *n += 1)),
                         gap_w(24.0),
                         fab(IconKind::Search).mini(true).on_pressed(move || taps.update(|n| *n += 1)),
                         gap_w(24.0),
@@ -47,7 +47,7 @@ pub fn fab_screen() -> Element {
                                 .border(Border::all(BorderSide::new(theme().colors.border, 1.0))),
                         )
                         .child(scaffold(center(text("body").color(theme().colors.muted_foreground)))
-                            .fab(fab(lucide::PLUS).on_pressed(move || taps.update(|n| *n += 1)))),
+                            .fab(fab(tabler::PLUS).on_pressed(move || taps.update(|n| *n += 1)))),
                 )
         ])
 }

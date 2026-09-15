@@ -39,13 +39,13 @@ pub fn breadcrumbs() -> Element {
                 .body(
                     column(children![
                         breadcrumb(vec!["Home".into(), "Docs".into(), "Getting started".into()])
-                            .separator(lucide::ARROW_RIGHT),
+                            .separator(tabler::ARROW_RIGHT),
                         gap_h(16.0),
                         breadcrumb(vec!["Home".into(), "Docs".into(), "Components".into()])
                             .separator(IconKind::Dot),
                         gap_h(16.0),
                         breadcrumb(vec!["Home".into(), "Docs".into(), "API".into()])
-                            .separator(lucide::MINUS),
+                            .separator(tabler::MINUS),
                     ])
                     .cross_axis_alignment(CrossAxisAlignment::Start)
                     .main_axis_size(MainAxisSize::Min),

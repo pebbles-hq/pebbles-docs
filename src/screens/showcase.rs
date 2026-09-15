@@ -33,35 +33,35 @@ const APPS: &[App] = &[
         name: "Pebbles Gallery",
         tagline: "This site — a routed docs + component catalog, built entirely in Pebbles.",
         tags: &["Docs", "Catalog", "Web"],
-        icon: lucide::LAYOUT_DASHBOARD,
+        icon: tabler::LAYOUT_DASHBOARD,
         grad: brand_gradient,
     },
     App {
         name: "Inventory Studio",
         tagline: "A desktop analytics dashboard: KPIs, charts, and a live data table.",
         tags: &["Desktop", "Data Table", "Charts"],
-        icon: lucide::TABLE,
+        icon: tabler::TABLE,
         grad: violet,
     },
     App {
         name: "Wallet",
         tagline: "A mobile finance app — animated balance, transaction lists, bottom nav.",
         tags: &["Mobile", "Motion", "Lists"],
-        icon: lucide::CREDIT_CARD,
+        icon: tabler::CREDIT_CARD,
         grad: teal,
     },
     App {
         name: "Canvas Notes",
         tagline: "An infinite-canvas note app showing off custom painting and gestures.",
         tags: &["Canvas", "Gestures", "Custom"],
-        icon: lucide::PALETTE,
+        icon: tabler::PALETTE,
         grad: pink,
     },
     App {
         name: "Kanban",
         tagline: "A drag-and-drop board — reorderable columns and cards, live filters.",
         tags: &["Drag & Drop", "State", "Desktop"],
-        icon: lucide::LAYOUT_GRID,
+        icon: tabler::LAYOUT_GRID,
         grad: indigo_teal,
     },
 ];
@@ -125,7 +125,7 @@ fn submit_card() -> impl IntoWidget {
         .alignment(Alignment::CENTER)
         .child(
             column(children![
-                icon(lucide::PLUS).size(30.0).color(brand::BROWN),
+                icon(tabler::PLUS).size(30.0).color(brand::BROWN),
                 gap_h(12.0),
                 text("Built something with Pebbles?").size(15.0).weight(600.0).color(c.foreground).align(TextAlign::Center),
                 gap_h(6.0),
